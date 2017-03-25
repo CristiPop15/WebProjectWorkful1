@@ -20,6 +20,8 @@
 			
 
 		<input type="submit" value="Stergere"/>
+		<input type="submit" value="Back to index" formaction="${pageContext.request.contextPath}/admin/index"/>
+		
 </form> 
 
 </body>

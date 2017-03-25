@@ -8,40 +8,49 @@
 <body>
 
 	
-   <h1>Add skills to category </h1>
+   <h1>Add skills to ${categoryChoice} </h1>
    
 	<p style="color:green;">${message}</p>
-   
-   <form action=skillAddedToCat>
-		<select name="categories">
-		    <c:forEach items="${category}" var="categories">
-	    		<option value="${categories}">${categories}</option>
-			</c:forEach>
-		</select>
-		
-		<select name="skills">
-		    <c:forEach items="${skill}" var="afis">
-	    		<option value="${afis}">${afis}</option>
-			</c:forEach>
-		</select>
-		<input type="hidden" name="success" value="success"/>
-		<input type="hidden" name="show" value="show"/>
-		
-		<br>		
+	<p style="color:red;">${Ermessage}</p>
 	
-		<input type="submit" value="Add"/>
-		<input type="submit" value="Show"  formaction="showSkills"/>
+   
+   <form action="${pageContext.request.contextPath}/admin/addSkillsToCategories">
+   	<input type="hidden" name="category" value="${categoryChoice}"/>
+   	
+   	
+   	<table border="1">
+   		<tr>
+   			<td><p>Skills for ${categoryChoice}:</p></td>
+   			<td>Select skill to be added:</td>
+   		</tr>
+		<tr>   	
+	   		<td>
+				<ul>
+					<c:forEach var="choiceList" items="${defaultSkills}">
+						<li>${choiceList}</li>
+					</c:forEach>
+				</ul>
+			</td>
+			<td><select name="item">
+				    <c:forEach items="${newSkills}" var="skills">
+		   		 		<option value="${skills}">${skills}</option>
+					</c:forEach>
+				</select>
+			</td>
+		</tr>
+		
+		
+	</table>
+	
+	<input type="submit" value="Add"/>		
 	</form>
 	
+	<form action="${pageContext.request.contextPath}/admin/intermediateSelection">
+		<input type="submit" value="Back"/>
+		<input type="hidden" name="type" value="${type}"/>
+	</form>
 	
-		<ul>
-			<c:forEach var="showSkills" items="${list}">
-				<li>${showSkills}</li>
-			</c:forEach>
-		</ul>
-	
-	
-	<form action="index">
+	<form action="${pageContext.request.contextPath}/admin/index">
 		<input type="submit" value="Back to index"/>
 	</form>
 

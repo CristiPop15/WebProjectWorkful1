@@ -16,6 +16,9 @@ public class Cont {
 	private static final String city="oras";
 	private static final String category="categorie";
 	private static final String skills="aptitudini";
+	
+	private static final String backToIndex="redirect:/admin/index";
+
 
 
 
@@ -30,7 +33,10 @@ public class Cont {
 	}
 	
 	@RequestMapping("afisare")
-	public ModelAndView afisare(@RequestParam("type") String choiceType, @RequestParam("choice") String choice){
+	public ModelAndView controlPanel(@RequestParam("type") String choiceType, 
+			@RequestParam("choice") String choice){
+		
+		
 		ModelAndView model = null;
 		
 		if(!choice.equals(city)){
@@ -50,7 +56,7 @@ public class Cont {
 			}
 		}
 		else{
-			model = new ModelAndView("admin/selectRegion");
+			model = new ModelAndView("admin/intermediateSelection");
 			model.addObject("type", choiceType);
 			model.addObject("choice", choice);
 			model.addObject("list", getStringList(region));
@@ -62,14 +68,14 @@ public class Cont {
 	@RequestMapping("add/judet")
 	public String addRegion(@RequestParam("new") String newValue){
 		db.addRegion(newValue);	
-		return "redirect:/admin/index";			
+		return backToIndex;			
 
 		}
 	
 	@RequestMapping("delete/judet")
 	public String removeRegion(@RequestParam("item") String toBeDeleted){
 		db.removeRegion(toBeDeleted);		
-		return "redirect:/admin/index";			
+		return backToIndex;			
 		}
 	
 	@RequestMapping("add/oras")
@@ -82,7 +88,7 @@ public class Cont {
 	@RequestMapping("addNewCity")
 	public String addNewCityToRegion(@RequestParam("new") String newCity, @RequestParam("region") String toRegion){
 		db.addCity(newCity, toRegion);
-		return "redirect:/admin/index";
+		return backToIndex;
 	}
 
 	@RequestMapping("delete/oras")
@@ -95,7 +101,7 @@ public class Cont {
 	@RequestMapping("deleteFromRegion")
 	public String removeCityFromRegion(@RequestParam("item") String cityToDelete, @RequestParam("region") String regionFrom){
 		db.removeCity(cityToDelete, regionFrom);
-		return "redirect:/admin/index";			
+		return backToIndex;			
 	}
 	
 	@RequestMapping("show/oras")
@@ -109,60 +115,90 @@ public class Cont {
 		@RequestMapping("add/categorie")
 	public String addCategory(@RequestParam("new") String toBeModified){
 			db.addCategory(toBeModified);		
-			return "redirect:/admin/index";				
+			return backToIndex;				
 			}
 		
 		@RequestMapping("delete/categorie")
 	public String removeCategory(@RequestParam("item") String toBeDeleted){
 			db.removeCategory(toBeDeleted);
-			return "redirect:/admin/index";				
+			return backToIndex;				
 			}
 	
 		@RequestMapping("add/aptitudini")
 	public String addSkill(@RequestParam("new") String toBeModified){
 			db.addSkill(toBeModified);		
-			return "redirect:/admin/index";				
+			return backToIndex;				
 			}
 		
 		@RequestMapping("delete/aptitudini")
 	public String removeSkill(@RequestParam("item") String toBeDeleted){
 			db.removeSkill(toBeDeleted);
-			return "redirect:/admin/index";				
+			return backToIndex;				
 			}
-		
-	@RequestMapping("AddSkillsToCategories")	
-	public ModelAndView addSkillsToCat(@RequestParam(value="success", required=false, defaultValue="firstTime")
-			String success, @RequestParam(value="categories", required=false, defaultValue="no") String showSkill){
-		
-		ModelAndView model = new ModelAndView("admin/addSkillsToCategories");
-		if(success.equals("firstTime")){
-			model.addObject("category", db.getCategory());
-			model.addObject("skill", getStringList(skills));
-			
-			model.addObject("list", db.getSkillFromCat(showSkill));
-			
-		}else{
-			model.addObject("message","Added");
-			model.addObject("category", db.getCategory());
-			model.addObject("skill", getStringList(skills));
-			
-			model.addObject("list", db.getSkillFromCat(showSkill));
-			
+		@RequestMapping("intermediateSelection")
+	public ModelAndView categorySelectionForSkill(@RequestParam("type") String type){
+			ModelAndView model = new ModelAndView("admin/intermediateSelection");
+			model.addObject("type",type);
+			model.addObject("choice", "skillToCategory");
+			model.addObject("list",getStringList(category));
+			return model;
 		}
-		return model;
-	}
-	
-	@RequestMapping("showSkills")
-	public String showSkills(@RequestParam("categories") String category){
-		return "redirect:/admin/AddSkillsToCategories?categories="+category;
-	}
-	
-	@RequestMapping("skillAddedToCat")
-	public String skillAddedToCat(@RequestParam("categories") String category, @RequestParam("skills") String skill){
-		db.insertSkillForCategory(skill, category);
-		return "redirect:/admin/AddSkillsToCategories?success=success";
-	} 
 		
+		@RequestMapping("add/skillToCategory")
+		public ModelAndView addSkillToCategoryModel(@RequestParam(value="success", required=false, defaultValue="firstTime") String success,
+				@RequestParam("item") String categoryChoice){
+			
+			ModelAndView model = new ModelAndView("admin/addSkillsToCategories");
+			model.addObject("categoryChoice", categoryChoice);
+			model.addObject("defaultSkills", db.getSkillFromCat(categoryChoice));
+			model.addObject("newSkills", db.getSkills());
+			model.addObject("type", "add");
+
+			
+			if(success.equals("false"))
+				model.addObject("Ermessage", "Error, skill may already be in list");
+			else if(success.equals("success"))
+				model.addObject("message", "Added");
+			
+			
+			return model;
+		}
+		
+		@RequestMapping("delete/skillToCategory")
+		public ModelAndView deleteSkillFromCategoryModel(@RequestParam(value="success", required=false, defaultValue="firstTime") String success,
+				@RequestParam("item") String categoryChoice){
+			
+			
+			ModelAndView model = new ModelAndView("admin/deleteSkillsFromCategory");
+			model.addObject("skills", db.getSkillFromCat(categoryChoice));
+			model.addObject("categoryChoice",categoryChoice);
+			model.addObject("type", "delete");
+
+
+			if(!success.equals("firstTime"))
+				model.addObject("message", "Deleted");
+
+			
+			return model;
+		}
+		
+		@RequestMapping("deleteSkillsFromCategory")
+		public String deleteSkillFromCategory(@RequestParam("item") String skill,
+				@RequestParam("category") String category){
+			db.deleteSkillFromCategory(category, skill);
+			return "redirect:/admin/delete/skillToCategory?success=success&item="+category;
+		}
+		
+		@RequestMapping("addSkillsToCategories")
+		public String addSkillToCategory(@RequestParam("item") String skill,
+				@RequestParam("category") String category){
+			if(db.insertSkillForCategory(skill, category))
+				return "redirect:/admin/add/skillToCategory?success=success&item="+category;
+			else 
+				return "redirect:/admin/add/skillToCategory?success=false&item="+category;
+		}
+		
+
 	private ArrayList<String> getStringList(String choice){
 		list.clear();
 		

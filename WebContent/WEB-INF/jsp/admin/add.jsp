@@ -14,4 +14,8 @@
 	<input type="submit" value="Save"/>
 </form>
 
+<form action="${pageContext.request.contextPath}/admin/index">
+		<input type="submit" value="Back to index"/>
+	</form>
+
 </body>

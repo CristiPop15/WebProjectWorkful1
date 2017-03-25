@@ -7,7 +7,7 @@
 </head>
 <body>
 
-   <h1>Select region</h1>
+   <h1>Select ${choice}</h1>
 
 <form action="${type}/${choice}">
 		<select name="item" id="dropdown">

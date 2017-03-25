@@ -7,7 +7,7 @@
 </head>
 <body>
 
-<h1>List cities from ${choice}</h1>
+<h1>List ${choice}</h1>
 
 		<ul>
 			<c:forEach var="choiceList" items="${list}">

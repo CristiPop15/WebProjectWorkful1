@@ -10,9 +10,14 @@ import java.util.List;
 
 public class DBHandler {
 
+	//statement used for executing the query
     private Statement st;
+    
+    //result set to browse through the result of the query(un fel de fetch array din php)
     private ResultSet res;
     
+    //used for singleton design pattern
+    //to ensure that only one instance of the dbHandler is created
     private static DBHandler dbHandler = new DBHandler();
     
     //method to return handler
@@ -35,6 +40,8 @@ public class DBHandler {
             e.printStackTrace();
         }
     }
+    
+    //***********FROM HERE - METHODS TO QUERY THE DB*************
     
     
     ////------------------- GET IDs ------------------/////////
@@ -89,7 +96,6 @@ public class DBHandler {
             e.printStackTrace();
         }
 
-
         return categoryId;
     }
 
@@ -101,13 +107,14 @@ public class DBHandler {
         try {
             res = st.executeQuery(query);
             if(res.next()) {
-            	skillId = res.getInt("id_categorie");
+            	skillId = res.getInt("id_aptitudine");
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
 
-
+        
+        
         return skillId;
     }
     
@@ -177,12 +184,11 @@ public class DBHandler {
         ArrayList<String>listaRegiuni = new ArrayList<String>();
 
         try {
-            String query = "SELECT regiune.nume_regiune FROM regiune ORDER BY nume_regiune ASC";
+            String query = "SELECT nume_regiune FROM regiune ORDER BY nume_regiune ASC";
             res = st.executeQuery(query);
 
             while(res.next()){
-                String regiune = res.getString("nume_regiune");
-                listaRegiuni.add(regiune);
+                listaRegiuni.add(res.getString("nume_regiune"));
                 }
 
 
@@ -439,14 +445,16 @@ public class DBHandler {
 	}
 	
 	//insert new skill into category
-	public void insertSkillForCategory(String skillName, String categoryName){
+	public boolean insertSkillForCategory(String skillName, String categoryName){
 		String query = "INSERT INTO categoriiaptitudini VALUES ("+getCategoryId(categoryName)+", "+getSkillId(skillName)+")";
     	
     	try {
     		st.executeUpdate(query);
         } catch (SQLException e) {
-            e.printStackTrace();
+        	e.printStackTrace();
+            return false;
         }
+    	return true;
 	}
 	
 	//delete skill from category

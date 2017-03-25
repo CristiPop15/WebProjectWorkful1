@@ -5,10 +5,11 @@
 	<title>Workful</title> 
 	</head>
 <body>
-   <h1>Workful index</h1>
+   <h1>Workful ControlPanel</h1>
    
-   <h2>Modifica:</h2>
+   <h2 style="text-decoration:underline">Modifica:</h2>
    
+   <strong>Individual changes</strong>
    <form action="afisare">
 	   <select name="type">
 	    	<option value="add">Adauga</option>
@@ -25,11 +26,26 @@
 	</form>
 	
 	<br>
-	
-	<form action="AddSkillsToCategories">
-		<input type="submit" value="Adauga Aptitudini la Categorii"/>
+	<hr>
+	<br>
+	<strong>Group changes</strong>
+	<form action="intermediateSelection">
+		<table>
+			<tr>
+				<td>
+	   				<select name="type">
+	    				<option value="add">Adauga</option>
+	    				<option value="delete">Sterge</option>
+	   				</select>		
+				</td>
+				<td> <p>Aptitudini la Categorii</p> </td>
+			</tr>
+			<tr>
+				<td><input type="submit" value="Enter"></td>
+			</tr>
+		</table>
 	</form>
-	
+
 	   
 </body>
 </html>

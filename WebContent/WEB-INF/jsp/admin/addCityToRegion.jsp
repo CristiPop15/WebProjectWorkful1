@@ -12,6 +12,9 @@
 	<input type="text" name="new"/>
 	<input type="hidden" name="region" value="${region}"/>
 	<input type="submit" value="Save"/>
+	
+	<input type="submit" value="Back to index" formaction="${pageContext.request.contextPath}/admin/index"/>
+	
 </form>
 
 </body>
