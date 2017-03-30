@@ -11,7 +11,7 @@
 
 		<ul>
 			<c:forEach var="choiceList" items="${list}">
-				<li>${choiceList}</li>
+				<li>${choiceList.getName()}</li>
 			</c:forEach>
 		</ul>
 		

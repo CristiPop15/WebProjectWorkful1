@@ -8,7 +8,7 @@
 <body>
 
 	
-   <h1>Add skills to ${categoryChoice} </h1>
+   <h1>Add skills to ${categoryChoiceName} </h1>
    
 	<p style="color:green;">${message}</p>
 	<p style="color:red;">${Ermessage}</p>
@@ -20,20 +20,20 @@
    	
    	<table border="1">
    		<tr>
-   			<td><p>Skills for ${categoryChoice}:</p></td>
+   			<td><p>Skills for ${categoryChoiceName}:</p></td>
    			<td>Select skill to be added:</td>
    		</tr>
 		<tr>   	
 	   		<td>
 				<ul>
 					<c:forEach var="choiceList" items="${defaultSkills}">
-						<li>${choiceList}</li>
+						<li>${choiceList.getName()}</li>
 					</c:forEach>
 				</ul>
 			</td>
 			<td><select name="item">
 				    <c:forEach items="${newSkills}" var="skills">
-		   		 		<option value="${skills}">${skills}</option>
+		   		 		<option value="${skills.getId()}">${skills.getName()}</option>
 					</c:forEach>
 				</select>
 			</td>

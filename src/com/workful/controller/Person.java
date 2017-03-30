@@ -1,4 +1,4 @@
-package com.workful;
+package com.workful.controller;
 
 import java.io.Serializable;
 

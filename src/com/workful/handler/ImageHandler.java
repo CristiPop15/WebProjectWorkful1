@@ -1,4 +1,4 @@
-package com.workful;
+package com.workful.handler;
 
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;

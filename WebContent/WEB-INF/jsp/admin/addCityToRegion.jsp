@@ -6,7 +6,7 @@
 </head>
 <body>
 
-   <h1>Add new city to ${region} </h1>
+   <h1>Add new city to ${regionName} </h1>
 
 <form action="${pageContext.request.contextPath}/admin/addNewCity">
 	<input type="text" name="new"/>

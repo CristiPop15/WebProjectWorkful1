@@ -8,7 +8,7 @@
 <body>
 
 	
-   <h1>Delete skills from ${categoryChoice} </h1>
+   <h1>Delete skills from ${categoryChoiceName} </h1>
    
 	<p style="color:red;">${message}</p>
    
@@ -17,11 +17,11 @@
 		
 		<select name="item">
 		    <c:forEach items="${skills}" var="skill">
-	    		<option value="${skill}">${skill}</option>
+	    		<option value="${skill.getId()}">${skill.getName()}</option>
 			</c:forEach>
 		</select>
 		
-		<input type="submit" value="Delete"/>		
+		<input type="submit" value="Delete" ${disabled}/>		
 	</form>
 	
 	<form action="${pageContext.request.contextPath}/admin/intermediateSelection">

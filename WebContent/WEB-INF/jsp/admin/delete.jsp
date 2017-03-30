@@ -11,12 +11,12 @@
 <form action="delete/${choice}">
 		<select name="item" id="dropdown">
 		    <c:forEach items="${list}" var="afis">
-	    		<option value="${afis}">${afis}</option>
+	    		<option value="${afis.getId()}">${afis.getName()}</option>
 			</c:forEach>
 		</select>
 		<br>		
 
-		<input type="submit" value="Stergere"/>
+		<input type="submit" value="Stergere" ${disabled}/>
 </form> 
 
 <form action="${pageContext.request.contextPath}/admin/index">

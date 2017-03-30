@@ -1,4 +1,4 @@
-package com.workful;
+package com.workful.handler;
 
 import java.sql.Statement;
 import java.sql.Connection;
@@ -6,7 +6,13 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.List;
+
+import com.workful.controller.Person;
+import com.workful.templates.Category;
+import com.workful.templates.City;
+import com.workful.templates.CommonFields;
+import com.workful.templates.Region;
+import com.workful.templates.Skill;
 
 public class DBHandler {
 
@@ -101,7 +107,8 @@ public class DBHandler {
 
     //use to get skill id based on skill title (provide skill title)
     //private because it's only used by methods within this class
-    private int getSkillId(String skill){
+    @SuppressWarnings("unused")
+	private int getSkillId(String skill){
     	int skillId=0;
         String query = "SELECT id_aptitudine FROM aptitudini WHERE nume_aptitudine='"+skill+"'";
         try {
@@ -112,10 +119,68 @@ public class DBHandler {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
-        
-        
+  
         return skillId;
+    }
+    
+    public String getSkillName(int skillId){
+    	String skillName = null;
+        String query = "SELECT nume_aptitudine FROM aptitudini WHERE id_aptitudine="+skillId;
+        try {
+            res = st.executeQuery(query);
+            if(res.next()) {
+            	skillName = res.getString("nume_aptitudine");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+  
+        return skillName;
+    }
+    
+    public String getCategoryName(int categoryId){
+    	String categoryName = null;
+        String query = "SELECT nume_categorie FROM categorie WHERE id_categorie="+categoryId;
+        try {
+            res = st.executeQuery(query);
+            if(res.next()) {
+            	categoryName = res.getString("nume_categorie");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+  
+        return categoryName;
+    }
+
+    public String getRegionName(int regionId){
+    	String regionName = null;
+        String query = "SELECT nume_regiune FROM regiune WHERE id_regiune="+regionId;
+        try {
+            res = st.executeQuery(query);
+            if(res.next()) {
+            	regionName = res.getString("nume_regiune");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+  
+        return regionName;
+    }
+
+    public String getCityName(int cityId){
+    	String cityName = null;
+        String query = "SELECT nume_oras FROM oras WHERE id_oras="+cityId;
+        try {
+            res = st.executeQuery(query);
+            if(res.next()) {
+            	cityName = res.getString("nume_regiune");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+  
+        return cityName;
     }
     
     //use to get search result
@@ -156,20 +221,21 @@ public class DBHandler {
 
     
     //use to get all cities from a region (providing region name)
-    public List<String> getCity(String regiune) {
-        ArrayList<String> listaOrase = new ArrayList<String>();
+    public ArrayList<CommonFields> getCity(int regiuneId) {
+        ArrayList<CommonFields> listaOrase = new ArrayList<CommonFields>();
 
         try {
-            String query = "SELECT oras.nume_oras FROM oras INNER JOIN regiune ON oras.id_regiune = regiune.id_regiune WHERE (regiune.nume_regiune='"+regiune+"')";
+            String query = "SELECT * FROM oras INNER JOIN regiune ON oras.id_regiune = regiune.id_regiune WHERE (regiune.id_regiune="+regiuneId+")";
             res = st.executeQuery(query);
 
 
             while(res.next()){
-                String oras = res.getString("nume_oras");
-                listaOrase.add(oras);
+                City city = new City();
+                city.setCityName(res.getString("nume_oras"));
+                city.setCityId(res.getInt("id_oras"));
+                listaOrase.add(city);
 
                 }
-
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -178,17 +244,22 @@ public class DBHandler {
         return listaOrase;
     }
     
+  
+    
     
     //use to get a list with all the regions
-    public List<String> getRegion() {
-        ArrayList<String>listaRegiuni = new ArrayList<String>();
+    public ArrayList<CommonFields> getRegion() {
+        ArrayList<CommonFields>listaRegiuni = new ArrayList<CommonFields>();
 
         try {
-            String query = "SELECT nume_regiune FROM regiune ORDER BY nume_regiune ASC";
+            String query = "SELECT * FROM regiune ORDER BY nume_regiune ASC";
             res = st.executeQuery(query);
 
             while(res.next()){
-                listaRegiuni.add(res.getString("nume_regiune"));
+                Region regions = new Region();
+                regions.setRegionName(res.getString("nume_regiune"));
+                regions.setRegionId(res.getInt("id_regiune"));
+                listaRegiuni.add(regions);
                 }
 
 
@@ -220,13 +291,17 @@ public class DBHandler {
     
     
     //used to get category list
-    public ArrayList<String> getCategory(){
-        ArrayList<String> list = new ArrayList<String>();
-        String query = "SELECT nume_categorie FROM categorie";
+    public ArrayList<CommonFields> getCategory(){
+        ArrayList<CommonFields> list = new ArrayList<CommonFields>();
+        
+        String query = "SELECT * FROM categorie";
         try {
             res = st.executeQuery(query);
             while (res.next()){
-                list.add(res.getString("nume_categorie"));
+            	Category category = new Category();
+            	category.setCategoryId(res.getInt("id_categorie"));
+            	category.setCategoryName(res.getString("nume_categorie"));
+                list.add(category);
             }
 
         } catch (SQLException e) {
@@ -327,16 +402,19 @@ public class DBHandler {
 
     //used for skills(aptitudini)
     //need to provide category name
-    public ArrayList<String> getSkills(){
+    public ArrayList<CommonFields> getSkills(){
 
-    	ArrayList<String> skills = new ArrayList<String>();
+    	ArrayList<CommonFields> skills = new ArrayList<CommonFields>();
     
-    	String query = "SELECT nume_aptitudine FROM aptitudini";
+    	String query = "SELECT * FROM aptitudini";
     			
         try {
             res = st.executeQuery(query);
             while (res.next()){
-                skills.add(res.getString("nume_aptitudine"));
+            	Skill skill = new Skill();
+            	skill.setSkillId(res.getInt("id_aptitudine"));
+            	skill.setSkillName(res.getString("nume_aptitudine"));
+                skills.add(skill);
             }
 
         } catch (SQLException e) {
@@ -363,9 +441,9 @@ public class DBHandler {
     }
     
     //remove category
-	public void removeCategory(String category){
+	public void removeCategory(int category){
 		
-		String query = "DELETE FROM categorie WHERE nume_categorie='"+category+"'";
+		String query = "DELETE FROM categorie WHERE id_categorie="+category;
     	
     	try {
     		st.executeUpdate(query);
@@ -387,9 +465,9 @@ public class DBHandler {
     }
     
 	//remove skill(aptitudini)
-	public void removeSkill(String skill){
+	public void removeSkill(int skill){
 		String query = "DELETE FROM aptitudini WHERE "
-				+ "nume_aptitudine='"+skill+"'";
+				+ "id_aptitudine="+skill;
     	
     	try {
     		st.executeUpdate(query);
@@ -399,8 +477,8 @@ public class DBHandler {
 	}
 
 	//add new city to region
-	public void addCity(String newCity, String region){
-		String query = "INSERT INTO oras(nume_oras, id_regiune) VALUES ('"+newCity+"', "+getRegionId(region)+")";
+	public void addCity(String newCity, int region){
+		String query = "INSERT INTO oras(nume_oras, id_regiune) VALUES ('"+newCity+"', "+region+")";
     	
     	try {
     		st.executeUpdate(query);
@@ -410,9 +488,9 @@ public class DBHandler {
 	}
 	    
 	//remove city from region
-	public void removeCity(String city, String region){
-		String query = "DELETE FROM oras WHERE nume_oras='"+city+"' "
-				+ "AND id_regiune="+getRegionId(region);
+	public void removeCity(int city, int region){
+		String query = "DELETE FROM oras WHERE id_oras="+city+" "
+				+ "AND id_regiune="+region;
     	
     	try {
     		st.executeUpdate(query);
@@ -433,9 +511,9 @@ public class DBHandler {
     }
 	    
 	//remove region
-	public void removeRegion(String region){
+	public void removeRegion(int region){
 
-		String query = "DELETE FROM regiune WHERE nume_regiune='"+region+"'";
+		String query = "DELETE FROM regiune WHERE id_regiune="+region+"";
     	
     	try {
     		st.executeUpdate(query);
@@ -445,8 +523,8 @@ public class DBHandler {
 	}
 	
 	//insert new skill into category
-	public boolean insertSkillForCategory(String skillName, String categoryName){
-		String query = "INSERT INTO categoriiaptitudini VALUES ("+getCategoryId(categoryName)+", "+getSkillId(skillName)+")";
+	public boolean insertSkillForCategory(int skillId, int categoryId){
+		String query = "INSERT INTO categoriiaptitudini VALUES ("+categoryId+", "+skillId+")";
     	
     	try {
     		st.executeUpdate(query);
@@ -458,9 +536,9 @@ public class DBHandler {
 	}
 	
 	//delete skill from category
-	public void deleteSkillFromCategory(String category, String skill){
+	public void deleteSkillFromCategory(int category, int skill){
 		String query = "DELETE FROM categoriiaptitudini WHERE "
-				+ "id_aptitudine="+getSkillId(skill)+" AND id_categorie="+getCategoryId(category);
+				+ "id_aptitudine="+skill+" AND id_categorie="+category;
     	
     	try {
     		st.executeUpdate(query);
@@ -469,18 +547,21 @@ public class DBHandler {
         }
 	}
 	
-	public List<String> getSkillFromCat(String cat) {
-        ArrayList<String>skillList = new ArrayList<String>();
+	public ArrayList<CommonFields> getSkillFromCat(int cat) {
+        ArrayList<CommonFields>skillList = new ArrayList<CommonFields>();
 
         try {
-            String query = "SELECT aptitudini.nume_aptitudine FROM aptitudini "
+            String query = "SELECT aptitudini.nume_aptitudine, aptitudini.id_aptitudine"
+            		+ " FROM aptitudini "
             		+ "JOIN categoriiaptitudini ON(aptitudini.id_aptitudine = categoriiaptitudini.id_aptitudine) "
-            		+ "WHERE categoriiaptitudini.id_categorie = "+getCategoryId(cat)
+            		+ "WHERE categoriiaptitudini.id_categorie = "+cat
             		+ " ORDER BY aptitudini.nume_aptitudine";
             res = st.executeQuery(query);
 
             while(res.next()){
-                String skill = res.getString("nume_aptitudine");
+            	Skill skill = new Skill();
+            	skill.setSkillName(res.getString("nume_aptitudine"));
+                skill.setSkillId(res.getInt("id_aptitudine"));
                 skillList.add(skill);
                 }
 

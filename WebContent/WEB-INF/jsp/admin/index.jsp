@@ -1,11 +1,17 @@
 <%@page contentType="text/html; charset=UTF-8"%>
+<%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+
 
 <html>
 <head>
 	<title>Workful</title> 
 	</head>
 <body>
+   <a href="<c:url value="/logout" />" > Logout</a>  
+	
+	<br>
    <h1>Workful ControlPanel</h1>
+   
    
    <h2 style="text-decoration:underline">Modifica:</h2>
    
@@ -45,6 +51,7 @@
 			</tr>
 		</table>
 	</form>
+	<hr>
 
 	   
 </body>
