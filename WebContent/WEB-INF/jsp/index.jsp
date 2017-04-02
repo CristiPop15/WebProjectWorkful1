@@ -7,6 +7,8 @@
 	<link href="${pageContext.request.contextPath}/resources/css/design.css" rel="stylesheet">      
 	</head>
 <body>
+   <a href="<c:url value="/logout" />" > Logout</a>  
+
    <h2>Alegeti judetul</h2>
    
 	<form action="admin/index">

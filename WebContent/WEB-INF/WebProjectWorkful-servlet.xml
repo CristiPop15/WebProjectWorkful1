@@ -26,7 +26,7 @@
 
 		<property name="mediaTypes">
 			<map>
-				<entry key="json" value="application/json" />
+				<entry key="json" value="application/json"/>
 			</map>
 		</property>
 	</bean>
