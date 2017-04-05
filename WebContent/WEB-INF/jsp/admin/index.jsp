@@ -53,6 +53,11 @@
 	</form>
 	<hr>
 
+<br>
+	<strong>New Admin</strong>
+	<form action="pin-control">
+		<input type="submit" value="New Admin">
+	</form>
 	   
 </body>
 </html>
