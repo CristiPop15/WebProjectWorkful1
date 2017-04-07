@@ -1,4 +1,4 @@
-package com.workful.templates;
+package com.workful.handler;
 
 import org.joda.time.LocalDate;
 

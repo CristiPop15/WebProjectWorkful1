@@ -5,7 +5,7 @@ body {
   font-family: 'Varela Round';
 }
 
-.login-form-1 .error {
+.form-1 .error {
 	padding: 15px;
 	margin-bottom: 20px;
 	border: 1px solid transparent;
@@ -15,7 +15,7 @@ body {
 	border-color: #ebccd1;
 }
 
-.login-form-1 .msg {
+.form-1 .msg {
 	padding: 15px;
 	margin-bottom: 20px;
 	border: 1px solid transparent;
@@ -35,23 +35,23 @@ a:hover {
   text-decoration: none;
 }
 /*=== 3. Text Outside the Box ===*/
-.etc-login-form {
+.etc-form {
   color: #919191;
   padding: 10px 20px;
 }
-.etc-login-form p {
+.etc-form p {
   margin-bottom: 5px;
 }
 /*=== 4. Main Form ===*/
-.login-form-1 {
+.form-1 {
   max-width: 300px;
   border-radius: 5px;
   display: inline-block;
 }
-.main-login-form {
+.main-form {
   position: relative;
 }
-.login-form-1 .form-control {
+.form-1 .form-control {
   display:table-cell; width:100%;
   text-align:center;
   border: 0;
@@ -64,24 +64,24 @@ a:hover {
   height:auto;
 }
 
-.login-form-1 .form-group {
+.form-1 .form-group {
   margin-bottom: 0;
   border-bottom: 2px solid #efefef;
   padding-right: 20px;
   position: relative;
 }
-.login-form-1 .form-group:last-child {
+.form-1 .form-group:last-child {
   border-bottom: 0;
 }
-.login-group {
+.group {
   background: #ffffff;
   color: #999999;
   border-radius: 8px;
   padding: 10px 20px;
 }
 
-/*=== 5. Login Button ===*/
-.login-form-1 .login-button {
+/*===  Button ===*/
+.form-1 .button {
   position: absolute;
   right: -25px;
   top: 50%;
@@ -95,11 +95,34 @@ a:hover {
   border-radius: 50%;
   transition: all ease-in-out 500ms;
 }
-.login-form-1 .login-button:hover {
-  color: #555555;
-  transform: rotate(450deg);
+
+.form-1 .filter {
+  position: absolute;
+  left: -25px;
+  top: 50%;
+  background: #ffffff;
+  color: #999999;
+  padding: 11px 0;
+  width: 50px;
+  height: 50px;
+  margin-top: -25px;
+  border: 5px solid #efefef;
+  border-radius: 50%;
+  transition: all ease-in-out 500ms;
 }
-.login-form-1 .login-button.clicked {
+
+
+.form-1 .button:hover {
+  color: #555555;
+  transform: rotate(360deg);
+}
+
+.form-1 .filter:hover {
+  color: #555555;
+  transform: rotate(180deg);
+}
+
+.form-1 .button.clicked {
   color: #555555;
 }
 
@@ -111,3 +134,4 @@ a:hover {
   font-weight: bold;
   margin-bottom:2px;
 }
+

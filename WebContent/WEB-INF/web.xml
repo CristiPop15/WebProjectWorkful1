@@ -7,6 +7,11 @@
   <display-name>WebProjectWorkful</display-name>
   
   <display-name>Spring MVC Application</display-name>
+  
+  <!-- Session timeout after 120 minutes -->
+  <session-config>
+  	<session-timeout>10</session-timeout>
+  </session-config>	
 
    <servlet>
 		<servlet-name>WebProjectWorkful</servlet-name>

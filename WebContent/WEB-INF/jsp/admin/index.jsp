@@ -58,6 +58,8 @@
 	<form action="pin-control">
 		<input type="submit" value="New Admin">
 	</form>
-	   
+	
+	<hr>
+	
 </body>
 </html>

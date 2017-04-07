@@ -1,11 +1,12 @@
+html,
 body {
-    background-color: lightblue;
+    background: #efefef; 
 }
 
-h1{
-	color:red;
-}
-
-h2{
-	color:#0000ff;
+.logo {
+  padding: 15px 0;
+  font-size: 30px;
+  color: #aaaaaa;
+  font-weight: bold;
+  margin-bottom:2px;
 }

@@ -24,9 +24,6 @@
 
 	<br>
 	<hr>
-	<br>
-<form action="${pageContext.request.contextPath}/admin/index">
-		<input type="submit" value="Back to index"/>
-	</form>
+
 </body>
 </html>

@@ -1,5 +1,7 @@
 package com.workful.templates;
 
+import com.workful.handler.Date;
+
 public class Account {
 	
 	private String email, password, registrationDate;

@@ -5,6 +5,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
@@ -26,6 +28,9 @@ public class AuthentificationController {
 	//for returning jsps from authentification folder
 	private final String AUTH = "authentification/";
 	
+	
+	private Authentication auth;
+	
 	//db
 	private DBHandler db = DBHandler.getInstance();
 
@@ -46,6 +51,15 @@ public class AuthentificationController {
 	//when some1 is trying to login
 	@RequestMapping("/login")
 	public String login(){
+		 
+		//if there is already an user logged in
+		auth = SecurityContextHolder.getContext().getAuthentication();
+
+		if (!(auth instanceof AnonymousAuthenticationToken)) {
+
+		    /* The user is logged in :) */
+		    return "forward:/index";
+		}
 		return AUTH+"login";
 	}
 	
@@ -71,7 +85,9 @@ public class AuthentificationController {
 		        if(session != null) {
 		            session.invalidate();
 		        }
-		        
+		        for(Cookie cookie : request.getCookies()) {
+		            cookie.setMaxAge(0);
+		        }        
 		 model.addAttribute("msg", "Succesful logout");
 	  return AUTH+"login";
 	 
@@ -92,6 +108,15 @@ public class AuthentificationController {
 	 
 	 @RequestMapping("/register")
 		public String register(){
+		 
+		 //if there is already an user logged in
+		 auth = SecurityContextHolder.getContext().getAuthentication();
+
+			if (!(auth instanceof AnonymousAuthenticationToken)) {
+
+			    /* The user is logged in :) */
+			    return "forward:/index";
+			}
 			return AUTH+"register";
 		}
 	 
@@ -111,6 +136,7 @@ public class AuthentificationController {
 	 
 	 @RequestMapping(value = "/registration", method = RequestMethod.POST)
 		public String registration(@ModelAttribute("registrationForm") AccountRegistration accReg, ModelMap model){
+		 
 		 
 	 /**
 	  * ========FIRST we check if the info sent is good=======
