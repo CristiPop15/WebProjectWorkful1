@@ -28,8 +28,8 @@ public class AuthentificationController {
 	//for returning jsps from authentification folder
 	private final String AUTH = "authentification/";
 	
-	
-	private Authentication auth;
+	Authentication auth;
+
 	
 	//db
 	private DBHandler db = DBHandler.getInstance();
@@ -51,9 +51,10 @@ public class AuthentificationController {
 	//when some1 is trying to login
 	@RequestMapping("/login")
 	public String login(){
+		
+		auth = SecurityContextHolder.getContext().getAuthentication();
 		 
 		//if there is already an user logged in
-		auth = SecurityContextHolder.getContext().getAuthentication();
 
 		if (!(auth instanceof AnonymousAuthenticationToken)) {
 
@@ -89,7 +90,9 @@ public class AuthentificationController {
 		            cookie.setMaxAge(0);
 		        }        
 		 model.addAttribute("msg", "Succesful logout");
-	  return AUTH+"login";
+		 
+	  
+		 return AUTH+"login";
 	 
 	 }
 	 
@@ -108,10 +111,9 @@ public class AuthentificationController {
 	 
 	 @RequestMapping("/register")
 		public String register(){
+		 auth = SecurityContextHolder.getContext().getAuthentication();
 		 
 		 //if there is already an user logged in
-		 auth = SecurityContextHolder.getContext().getAuthentication();
-
 			if (!(auth instanceof AnonymousAuthenticationToken)) {
 
 			    /* The user is logged in :) */
@@ -138,9 +140,9 @@ public class AuthentificationController {
 		public String registration(@ModelAttribute("registrationForm") AccountRegistration accReg, ModelMap model){
 		 
 		 
-	 /**
-	  * ========FIRST we check if the info sent is good=======
-	 */
+	 
+	 // * ========FIRST we check if the info sent is good=======
+	 
 		 
 		 System.out.println(accReg.getEmail());
 		 
@@ -161,9 +163,9 @@ public class AuthentificationController {
 		 }
 		 
 		 
-	 /**
-	 * ========if all the info sent is good proceed to create new account =======
-	 */
+	 
+	 // * ========if all the info sent is good proceed to create new account =======
+	 
 		 //store in db
 		 Account newAccount = new Account();
 		 
@@ -183,9 +185,11 @@ public class AuthentificationController {
 		}
 
 	 
+	 
 	 /**
-	  * ==============  FORGOT PASSWORD  =============
+	  * ==============  PASSWORD RECOVERY  =============
 	 */
+	 
 	 
 	 @RequestMapping("password-recover")
 	 public String password(@RequestParam(value = "error", required=false) String error, ModelMap model){

@@ -5,6 +5,7 @@ body {
   font-family: 'Varela Round';
 }
 
+
 .form-1 .error {
 	padding: 15px;
 	margin-bottom: 20px;
@@ -31,7 +32,7 @@ a {
   transition: all ease-in-out 200ms;
 }
 a:hover {
-  color: #333333;
+  color: #b3d9ff;
   text-decoration: none;
 }
 /*=== 3. Text Outside the Box ===*/
@@ -85,7 +86,7 @@ a:hover {
   position: absolute;
   right: -25px;
   top: 50%;
-  background: #ffffff;
+  background: #c1ffc1;
   color: #999999;
   padding: 11px 0;
   width: 50px;
@@ -100,7 +101,22 @@ a:hover {
   position: absolute;
   left: -25px;
   top: 50%;
-  background: #ffffff;
+  background: #b3d9ff;
+  color: #999999;
+  padding: 11px 0;
+  width: 50px;
+  height: 50px;
+  margin-top: -25px;
+  border: 5px solid #efefef;
+  border-radius: 50%;
+  transition: all ease-in-out 500ms;
+}
+
+.form-1 .delete-button {
+  position: absolute;
+  left: -25px;
+  top: 50%;
+  background: #ff8080;
   color: #999999;
   padding: 11px 0;
   width: 50px;
@@ -122,6 +138,11 @@ a:hover {
   transform: rotate(180deg);
 }
 
+.form-1 .delete-button:hover {
+  color: #555555;
+  transform: rotate(180deg);
+}
+
 .form-1 .button.clicked {
   color: #555555;
 }
@@ -134,4 +155,5 @@ a:hover {
   font-weight: bold;
   margin-bottom:2px;
 }
+
 

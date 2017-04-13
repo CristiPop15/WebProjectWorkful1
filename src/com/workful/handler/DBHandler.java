@@ -1,8 +1,9 @@
 package com.workful.handler;
 
 import java.sql.Statement;
+import java.beans.PropertyVetoException;
+import java.io.IOException;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -23,9 +24,15 @@ public class DBHandler {
     //result set to browse through the result of the query(un fel de fetch array din php)
     private ResultSet res;
     
+    //connection pool
+    private DataSourcePool dataSource;
+    
     //used for singleton design pattern
     //to ensure that only one instance of the dbHandler is created
     private static DBHandler dbHandler = new DBHandler();
+    
+    //connection to db
+    private Connection con;
     
     //method to return handler
     //Singleton Desing Pattern
@@ -38,74 +45,141 @@ public class DBHandler {
     private DBHandler() {
        
     	try {
-            Class.forName("com.mysql.jdbc.Driver");
-
-            Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/workful", "root", "");
-            st = con.createStatement();
-            
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+			dataSource = DataSourcePool.getInstance();
+		} catch (IOException | SQLException | PropertyVetoException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
     }
     
+   
+    
     /**
-     * *********FROM HERE - METHODS TO QUERY THE DB*************
+    *********FROM HERE - METHODS TO QUERY THE DB*************
      */
     
     //=========================================================================
     
 	    /**
 	     * ------------------- GET IDs ------------------/////////
+	     * @throws SQLException 
 	     * 
 	     */
-	    
+	  
 	    private int getAccountId(String email){
+	    	Connection connection = null;
+	    	Statement statement = null;
+	    	ResultSet result = null;
+	    	
+	    	try {
+	    		connection = dataSource.getConnection();
+				statement = connection.createStatement();
+
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}	    	
 	    	int accountId = 0;
 	        String query = "SELECT id_cont FROM cont WHERE email='"+email+"'";
 	       try {
-	           res = st.executeQuery(query);
-	           if(res.next()) {
-	        	   accountId = res.getInt("id_cont");
+	    	   result = statement.executeQuery(query);
+	           if(result.next()) {
+	        	   accountId = result.getInt("id_cont");
 	           }
 	       }
 	       catch (Exception e){
 	           e.printStackTrace();
+	       }finally{
+	    	   if (result != null) try { result.close(); } catch (SQLException e) {e.printStackTrace();}
+	            if (statement != null) try { statement.close(); } catch (SQLException e) {e.printStackTrace();}
+	            if (connection != null) try { connection.close(); } catch (SQLException e) {e.printStackTrace();}
+				
 	       }
+	       
+	       
 	        return accountId;
 	    	
 	    }
 	
+	   //used when logging in
+		public int getPersonId(String email) {
+			
+			return getAccountId(email);
+		}
+
+	    
+	    
 	    ///use to get region's id providing region name
 	    //private because it's used within this class
 	    private int getRegionId(String regionName){
-	        int regionId = 0;
+	    	
+	    	Connection connection = null;
+	    	Statement statement = null;
+	    	ResultSet result = null;
+	    	
+	    	try {
+	    		connection = dataSource.getConnection();
+				statement = connection.createStatement();
+
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}	
+	    	
+	    	int regionId = 0;
 	        String query = "SELECT id_regiune FROM regiune WHERE nume_regiune='"+regionName+"'";
 	       try {
-	           res = st.executeQuery(query);
-	           if(res.next()) {
-	               regionId = res.getInt("id_regiune");
+	    	   result = statement.executeQuery(query);
+	           if(result.next()) {
+	               regionId = result.getInt("id_regiune");
 	           }
 	       }
 	       catch (Exception e){
 	           e.printStackTrace();
+	       }finally{
+	    	   if (result != null) try { result.close(); } catch (SQLException e) {e.printStackTrace();}
+	            if (statement != null) try { statement.close(); } catch (SQLException e) {e.printStackTrace();}
+	            if (connection != null) try { connection.close(); } catch (SQLException e) {e.printStackTrace();}
+				
 	       }
+	       
 	        return regionId;
 	    }
 	
 	    
 	    ///use to get city's id providing city name
-	    private int getCityId(String cityName){
-	        int cityId = 0;
+	    private int getCityId(String cityName) {
+	    	
+	    	Connection connection = null;
+	    	Statement statement = null;
+	    	ResultSet result = null;
+	    	
+	    	try {
+	    		connection = dataSource.getConnection();
+				statement = connection.createStatement();
+
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+	    	
+	    	int cityId = 0;
 	        String query = "SELECT id_oras FROM oras WHERE nume_oras='"+cityName+"'";
 	        try {
-	            res = st.executeQuery(query);
-	            if(res.next()) {
-	                cityId = res.getInt("id_oras");
+	        	result = statement.executeQuery(query);
+	            if(result.next()) {
+	                cityId = result.getInt("id_oras");
 	            }
 	        }
 	        catch (Exception e){
 	            e.printStackTrace();
-	        }
+	        }finally{
+		      if (result != null) try { result.close(); } catch (SQLException e) {e.printStackTrace();}
+		      if (statement != null) try { statement.close(); } catch (SQLException e) {e.printStackTrace();}
+		      if (connection != null) try { connection.close(); } catch (SQLException e) {e.printStackTrace();}
+					
+		       }
+	        
+	        
 	        return cityId;
 	    }
 	
@@ -114,38 +188,78 @@ public class DBHandler {
 	    //private because it's only used by methods within this class
 	    //registerNewPerson()
 	    private int getCategoryId(String category){
+
+	    	Connection connection = null;
+	    	Statement statement = null;
+	    	ResultSet result = null;
+	    	
+	    	try {
+	    		connection = dataSource.getConnection();
+				statement = connection.createStatement();
+
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+	    	
+	    	
 	        int categoryId=0;
 	        String query = "SELECT categorie.id_categorie FROM categorie WHERE nume_categorie='"+category+"'";
 	        try {
-	            res = st.executeQuery(query);
-	            if(res.next()) {
-	                categoryId = res.getInt("id_categorie");
+	        	result = statement.executeQuery(query);
+	            if(result.next()) {
+	                categoryId = result.getInt("id_categorie");
 	            }
 	        } catch (SQLException e) {
 	            e.printStackTrace();
-	        }
+	        }finally{
+			      if (result != null) try { result.close(); } catch (SQLException e) {e.printStackTrace();}
+			      if (statement != null) try { statement.close(); } catch (SQLException e) {e.printStackTrace();}
+			      if (connection != null) try { connection.close(); } catch (SQLException e) {e.printStackTrace();}
+						
+			       }
+	        
 	
 	        return categoryId;
 	    }
 	
 	    //use to get skill id based on skill title (provide skill title)
 	    //private because it's only used by methods within this class
-	    @SuppressWarnings("unused")
+		@SuppressWarnings("unused")
 		private int getSkillId(String skill){
+
+			Connection connection = null;
+	    	Statement statement = null;
+	    	ResultSet result = null;
+	    	
+	    	try {
+	    		connection = dataSource.getConnection();
+				statement = connection.createStatement();
+
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+	    	
 	    	int skillId=0;
 	        String query = "SELECT id_aptitudine FROM aptitudini WHERE nume_aptitudine='"+skill+"'";
 	        try {
-	            res = st.executeQuery(query);
-	            if(res.next()) {
-	            	skillId = res.getInt("id_aptitudine");
+	        	result = statement.executeQuery(query);
+	            if(result.next()) {
+	            	skillId = result.getInt("id_aptitudine");
 	            }
 	        } catch (SQLException e) {
 	            e.printStackTrace();
-	        }
+	        }finally{
+			      if (result != null) try { result.close(); } catch (SQLException e) {e.printStackTrace();}
+			      if (statement != null) try { statement.close(); } catch (SQLException e) {e.printStackTrace();}
+			      if (connection != null) try { connection.close(); } catch (SQLException e) {e.printStackTrace();}
+						
+			       }
+	       
 	  
 	        return skillId;
 	    }
-	    
+	 
 	    /**
 	     * -------------------END GET IDs ------------------/////////
      * 
@@ -156,10 +270,14 @@ public class DBHandler {
     
     /**
      * ------------------- GET Names ------------------/////////
+     * @throws SQLException 
      * 
      */
     
     public String getSkillName(int skillId){
+    	
+    	createStatement();
+    	
     	String skillName = null;
         String query = "SELECT nume_aptitudine FROM aptitudini WHERE id_aptitudine="+skillId;
         try {
@@ -170,11 +288,17 @@ public class DBHandler {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+        finally{
+	    	   closeStatement();
+	       }
   
         return skillName;
     }
     
     public String getCategoryName(int categoryId){
+
+    	createStatement();
+    	
     	String categoryName = null;
         String query = "SELECT nume_categorie FROM categorie WHERE id_categorie="+categoryId;
         try {
@@ -185,11 +309,18 @@ public class DBHandler {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+        finally{
+	    	   closeStatement();
+
+	       }
   
         return categoryName;
     }
 
     public String getRegionName(int regionId){
+
+    	createStatement();
+    	
     	String regionName = null;
         String query = "SELECT nume_regiune FROM regiune WHERE id_regiune="+regionId;
         try {
@@ -200,11 +331,18 @@ public class DBHandler {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+        finally{
+	    	   closeStatement();
+
+	       }
   
         return regionName;
     }
 
     public String getCityName(int cityId){
+
+    	createStatement();
+    	
     	String cityName = null;
         String query = "SELECT nume_oras FROM oras WHERE id_oras="+cityId;
         try {
@@ -215,6 +353,11 @@ public class DBHandler {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+        finally{	    	   
+        	closeStatement();
+
+	       }
+
   
         return cityName;
     }
@@ -228,12 +371,16 @@ public class DBHandler {
     
     /**
 	     * -------------------Search. GET List's------------------/////////
+     * @throws SQLException 
 	     * 
 	     */
 	    
 	    //use to get search result
 	    //TODO modify
 	    public ArrayList<Person> getSearchResult(int idRegion, int idCity, String search){
+	    	
+	    	createStatement();
+	    	
 	        ArrayList<Person> arrayList = new ArrayList<Person>();
 	
 	        String query = "SELECT persoana.nume, persoana.telefon, persoana.id_categorie, persoana.titlu, persoana.descriere, persoana.rating, persoana.voturi, persoana.imagine, persoana.email, oras.nume_oras, regiune.nume_regiune, categorie.nume_categorie " +
@@ -263,12 +410,19 @@ public class DBHandler {
 	        }catch (Exception e){
 	            e.printStackTrace();
 	        }
+	        finally{
+		    	   closeStatement();
+
+		       }
+	        
 	        return  arrayList;
 	    }
 	
 	    
 	    //use to get all cities from a region (providing region name)
 	    public ArrayList<CommonFields> getCity(int regiuneId) {
+	    	createStatement();
+	    	
 	        ArrayList<CommonFields> listaOrase = new ArrayList<CommonFields>();
 	
 	        try {
@@ -287,6 +441,10 @@ public class DBHandler {
 	        } catch (Exception e) {
 	            e.printStackTrace();
 	        }
+	        finally{
+		    	   closeStatement();
+
+		       }
 	
 	        return listaOrase;
 	    }
@@ -294,6 +452,9 @@ public class DBHandler {
 	    
 	    //use to get a list with all the regions
 	    public ArrayList<CommonFields> getRegion() {
+
+	    	createStatement();
+	    	
 	        ArrayList<CommonFields>listaRegiuni = new ArrayList<CommonFields>();
 	
 	        try {
@@ -311,12 +472,19 @@ public class DBHandler {
 	        } catch (Exception e) {
 	            e.printStackTrace();
 	        }
+	        finally{
+		    	   closeStatement();
+
+		       }
 	
 	        return listaRegiuni;
 	    }
 	    
 	    //used to get category list
 	    public ArrayList<CommonFields> getCategory(){
+
+	    	createStatement();
+	    	
 	        ArrayList<CommonFields> list = new ArrayList<CommonFields>();
 	        
 	        String query = "SELECT * FROM categorie";
@@ -332,12 +500,19 @@ public class DBHandler {
 	        } catch (SQLException e) {
 	            e.printStackTrace();
 	        }
+	        finally{
+		    	   closeStatement();
+
+		       }
 	
 	        return list;
 	    }
 	    
 	    //used to get skills from category providing category id
 		public ArrayList<CommonFields> getSkillFromCat(int cat) {
+
+			createStatement();
+			
 	        ArrayList<CommonFields>skillList = new ArrayList<CommonFields>();
 
 	        try {
@@ -359,13 +534,50 @@ public class DBHandler {
 	        } catch (Exception e) {
 	            e.printStackTrace();
 	        }
+	        finally{
+		    	   closeStatement();
+
+		       }
 
 	        return skillList; 
 		
 		}
 
+		
+		 //used for skills(aptitudini)
+	    //need to provide category name
+	    public ArrayList<CommonFields> getSkills(){
+
+	    	createStatement();
+
+	    	ArrayList<CommonFields> skills = new ArrayList<CommonFields>();
+	    
+	    	String query = "SELECT * FROM aptitudini";
+	    			
+	        try {
+	            res = st.executeQuery(query);
+	            while (res.next()){
+	            	Skill skill = new Skill();
+	            	skill.setSkillId(res.getInt("id_aptitudine"));
+	            	skill.setSkillName(res.getString("nume_aptitudine"));
+	                skills.add(skill);
+	            }
+
+	        } catch (SQLException e) {
+	            e.printStackTrace();
+	        }
+	        finally{
+	        	closeStatement();
+
+		       }
+	    
+	    	return skills;
+	    }
+
+		
 	    /**
 	     * -------------------END GET List's------------------/////////
+	     * @throws SQLException 
      * 
      */
 
@@ -375,6 +587,9 @@ public class DBHandler {
     //login
     //TODO modify
     boolean login(String email, String password){
+
+    	createStatement();
+    	
         boolean succesfulLogin = false;
 
         try {
@@ -387,28 +602,46 @@ public class DBHandler {
         } catch (Exception e) {
             e.printStackTrace();
         }
+        finally{
+	    	   closeStatement();
+
+	       }
         return succesfulLogin;
     }
 
+    
+    
     //Register new Account
     public boolean registerNewAccount(Account account){
+
+    	createStatement();
+    	
     	boolean success = true;
     	String query = "INSERT INTO cont(email, parola, data_inregistrare) VALUES ('"+account.getEmail()+"',"
     			+ "'"+account.getPassword()+"', '"+account.getRegistrationDate()+"')";
     	try {
     		st.executeUpdate(query);
     		setRole(getAccountId(account.getEmail()), "ROLE_USER");
+    		
+    		insertImage(getAccountId(account.getEmail()));
 
         } catch (SQLException e) {
             e.printStackTrace();
             success = false;
         }
+    	finally{
+	    	   closeStatement();
+
+	       }
     	
     	
     	return success;
     }
     
     private void setRole(int account_id, String role){
+
+    	createStatement();
+    	
     	String query = "INSERT INTO user_roles(cont_id, role) VALUES ("+account_id+", '"+role+"')";
     	try {
     		st.executeUpdate(query);
@@ -418,12 +651,41 @@ public class DBHandler {
     	
     }
     
+    public String getImagePath(int id) {
+    	
+    	createStatement();
+    	
+		String path = null;
+		
+		try {
+			String query = "SELECT cale_imagine from imagini where id_cont="+id;
+            res = st.executeQuery(query);
+            if (res.next()) {
+                path = res.getString("cale_imagine");
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        finally{
+	    	   closeStatement();
+
+	       }
+		
+		
+		return path;
+	}
+
+
 
     
     //used to get one person profile (muncitor)
     //for login purpose
     //TODO modify
     public Person getPerson(String email, String password){
+
+    	createStatement();
+    	
         Person p = new Person();
 
         try{
@@ -447,6 +709,10 @@ public class DBHandler {
         }catch (Exception e){
             e.printStackTrace();
         }
+        finally{
+	    	   closeStatement();
+
+	       }
 
         return p;
     }
@@ -454,6 +720,9 @@ public class DBHandler {
     //TODO modify
     //used to register new user
     public boolean registerNewPerson(Person p){
+
+    	createStatement();
+    	
         boolean register=true;
         int success=0;
         String img = null;
@@ -475,6 +744,10 @@ public class DBHandler {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+        finally{
+	    	   closeStatement();
+
+	       }
 
         if(success == 0){
             register=false;
@@ -488,6 +761,9 @@ public class DBHandler {
     //search for email
     //used for login
     public boolean searchForEmail(String email){
+
+    	createStatement();
+    	
         boolean exists=false;
 
         String query = "SELECT email FROM cont WHERE email = '"+email+"'";
@@ -504,37 +780,100 @@ public class DBHandler {
             e.printStackTrace();
             System.out.println("Email not in db!!!");
         }
+        finally{	
+        	closeStatement();
+
+	       }
 
         return exists;
     }
 
-    //used for skills(aptitudini)
-    //need to provide category name
-    public ArrayList<CommonFields> getSkills(){
-
-    	ArrayList<CommonFields> skills = new ArrayList<CommonFields>();
-    
-    	String query = "SELECT * FROM aptitudini";
-    			
-        try {
-            res = st.executeQuery(query);
-            while (res.next()){
-            	Skill skill = new Skill();
-            	skill.setSkillId(res.getInt("id_aptitudine"));
-            	skill.setSkillName(res.getString("nume_aptitudine"));
-                skills.add(skill);
-            }
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    
-    	return skills;
-    }
-
+   
     //TODO comments
     
+    /**
+     * ------------- FOR USER SETTINGS ----------------------//
+     * @throws SQLException 
+     * 
+     */
     
+	  public boolean updateUserPassword(String user, String hashedPassword) {
+
+		  createStatement();
+		  
+			String query = "UPDATE cont SET parola = '"+hashedPassword+"' "
+					+ "WHERE id_cont = "+getAccountId(user);
+			try {
+	    		st.executeLargeUpdate(query);
+	        } catch (SQLException e) {
+	            e.printStackTrace();
+	            return false;
+	        }
+			finally{
+		    	   closeStatement();
+
+		       }
+			return true;
+		}
+
+	  public boolean deleteUser(String user){
+
+		  createStatement();
+		  
+		  String query = "DELETE FROM cont WHERE email='"+user+"'";
+			try {
+	    		st.executeUpdate(query);
+	        } catch (SQLException e) {
+	            e.printStackTrace();
+	            return false;
+	        }
+			finally{
+		    	   closeStatement();
+		       }
+			return true;
+		}
+	    
+	  public void updateImage(String path, int id){
+		  
+		  createStatement();
+		  
+		  String query = "UPDATE imagini SET cale_imagine = '"+path+"' WHERE "
+		  		+ "id_cont = "+id;
+		  
+		  try{
+			  st.executeUpdate(query);
+			  System.out.println("path updated");
+		  }catch(SQLException e){
+			  e.printStackTrace();
+		  }finally{
+			  closeStatement();
+		  }
+	 }
+	 
+	  private void insertImage(int id){
+		  
+		  createStatement();
+		  
+		  String query = "INSERT INTO imagini(id_cont) VALUES("+id+")";
+		  
+		  try{
+			  st.executeUpdate(query);
+		  }catch(SQLException e){
+			  e.printStackTrace();
+		  }
+		  
+	  }
+	 
+	    /**
+	     * ------------- END USER SETTINGS ----------------------// 
+	     * 
+	     */
+
+
+	  
+//*********************************************************************************
+
+	  
     
     /**
 	     * -------------FOR ADMIN----------------------//
@@ -545,10 +884,14 @@ public class DBHandler {
     
     /**
      * --------------- ADD/CREATE ----------------------
+     * @throws SQLException 
      */
     
     //Register new admin Account
     public boolean registerNewAdminAccount(Account account){
+
+    	createStatement();
+    	
     	boolean success = true;
     	String query = "INSERT INTO cont(email, parola, data_inregistrare) VALUES ('"+account.getEmail()+"',"
     			+ "'"+account.getPassword()+"', '"+account.getRegistrationDate()+"')";
@@ -560,6 +903,10 @@ public class DBHandler {
             e.printStackTrace();
             success = false;
         }
+    	finally{
+	    	   closeStatement();
+
+    	}
     	
     	
     	return success;
@@ -567,6 +914,9 @@ public class DBHandler {
     
     //add new category
     public void addCategory(String newCategory){
+
+    	createStatement();
+    	
     	String query = "INSERT INTO categorie(nume_categorie) VALUES ('"+newCategory+"')";
     	
     	try {
@@ -574,10 +924,17 @@ public class DBHandler {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    	finally{
+
+	    	   closeStatement();
+    	}
     }
     
     //add new skill(aptitudini)
   	public void addSkill(String newSkill){
+
+  		createStatement();
+  		
   			String query = "INSERT INTO aptitudini(nume_aptitudine) "
   					+ "VALUES ('"+newSkill+"')";
   	    	
@@ -586,10 +943,17 @@ public class DBHandler {
   	        } catch (SQLException e) {
   	            e.printStackTrace();
   	        }
+  	    	finally{
+
+ 	    	   closeStatement();
+  	    	}
   	    }
     	
   	//add new city to region
   	public void addCity(String newCity, int region){
+
+  		createStatement();
+  		
   				String query = "INSERT INTO oras(nume_oras, id_regiune) VALUES ('"+newCity+"', "+region+")";
   		    	
   		    	try {
@@ -597,10 +961,17 @@ public class DBHandler {
   		        } catch (SQLException e) {
   		            e.printStackTrace();
   		        }
+  		    	finally{
+
+  		    	   closeStatement();
+  		    	}
   			}
     
   	//add new region
   	public void addRegion(String newRegion){
+
+  		createStatement();
+  		
   			String query = "INSERT INTO regiune(nume_regiune) VALUES ('"+newRegion+"')";
   	    	
   	    	try {
@@ -608,10 +979,17 @@ public class DBHandler {
   	        } catch (SQLException e) {
   	            e.printStackTrace();
   	        }
+  	    	finally{
+
+		    	   closeStatement();
+		    	}
   	    }
   		
   	//insert new skill into category
   	public boolean insertSkillForCategory(int skillId, int categoryId){
+
+  		createStatement();
+  		
   			String query = "INSERT INTO categoriiaptitudini VALUES ("+categoryId+", "+skillId+")";
   	    	
   	    	try {
@@ -620,6 +998,10 @@ public class DBHandler {
   	        	e.printStackTrace();
   	            return false;
   	        }
+  	    	finally{
+
+		    	   closeStatement();
+		    	}
   	    	return true;
   		}
   	
@@ -633,10 +1015,13 @@ public class DBHandler {
     
     /**
      * --------------- REMOVE/DELETE ------------------------
+     * @throws SQLException 
      */
 	    
 	    //remove category
 		public void removeCategory(int category){
+			
+			createStatement();
 			
 			String query = "DELETE FROM categorie WHERE id_categorie="+category;
 	    	
@@ -645,11 +1030,18 @@ public class DBHandler {
 	        } catch (SQLException e) {
 	            e.printStackTrace();
 	        }
+	    	finally{
+
+		    	   closeStatement();
+		    	}
 		}
 				
 	    
 		//remove skill(aptitudini)
 		public void removeSkill(int skill){
+
+			createStatement();
+			
 			String query = "DELETE FROM aptitudini WHERE "
 					+ "id_aptitudine="+skill;
 	    	
@@ -658,11 +1050,18 @@ public class DBHandler {
 	        } catch (SQLException e) {
 	            e.printStackTrace();
 	        }
+	    	finally{
+
+		    	   closeStatement();
+		    	}
 		}
 	
 			    
 		//remove city from region
 		public void removeCity(int city, int region){
+
+			createStatement();
+			
 			String query = "DELETE FROM oras WHERE id_oras="+city+" "
 					+ "AND id_regiune="+region;
 	    	
@@ -671,11 +1070,17 @@ public class DBHandler {
 	        } catch (SQLException e) {
 	            e.printStackTrace();
 	        }
+	    	finally{
+
+		    	   closeStatement();
+		    	}
 		}
 			
 		    
 		//remove region
 		public void removeRegion(int region){
+
+			createStatement();
 	
 			String query = "DELETE FROM regiune WHERE id_regiune="+region+"";
 	    	
@@ -684,11 +1089,18 @@ public class DBHandler {
 	        } catch (SQLException e) {
 	            e.printStackTrace();
 	        }
+	    	finally{
+
+		    	   closeStatement();
+		    	}
 		}
 		
 		
 		//delete skill from category
 		public void deleteSkillFromCategory(int category, int skill){
+			
+			createStatement();
+			
 			String query = "DELETE FROM categoriiaptitudini WHERE "
 					+ "id_aptitudine="+skill+" AND id_categorie="+category;
 	    	
@@ -697,9 +1109,43 @@ public class DBHandler {
 	        } catch (SQLException e) {
 	            e.printStackTrace();
 	        }
+	    	finally{
+
+		    	   closeStatement();
+		    	}
 		}
+
+
 		
 		/**
 	     * --------------- END REMOVE/DELETE ------------------------
 	     */
+
+		
+	//=========================== Pooling =======================
+		private void closeStatement(){
+			
+			if (res != null) try { res.close(); } catch (SQLException e) {e.printStackTrace();}
+            if (st != null) try { st.close(); } catch (SQLException e) {e.printStackTrace();}
+            if (con != null) try { con.close(); } catch (SQLException e) {e.printStackTrace();}
+			
+		}
+
+		private void createStatement(){
+			try {
+				con = dataSource.getConnection();
+				st = con.createStatement();
+
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+            
+	       
+	       
+		}
+
+	
+		
+
 }

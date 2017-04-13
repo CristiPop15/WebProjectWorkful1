@@ -3,12 +3,15 @@
 
 <c:choose>
     <c:when test="${user=='1'}">
-        <%@ include file="navigation/navbar.jsp" %>
+        <c:if test="${not empty path}">
+	    	<jsp:include page="../navigation/navbar-user.jsp" >
+			  <jsp:param name="img-path" value="${path}" />
+			</jsp:include>	
+    	</c:if>
         <br />
     </c:when>    
     <c:otherwise>
-        <%@ include file="navigation/navbar-user.jsp" %>
-	  <br />
+   		 <%@ include file="../navigation/navbar.jsp" %>
     </c:otherwise>
 </c:choose>
 
@@ -27,7 +30,9 @@
 	   
 </head>
 <body>
-<!-- SEARCH FORM -->
+
+<!--  ======================== SEARCH FORM ========================================== -->
+
 <div class="text-center" style="text-align:center;">
 	<div class="logo">search</div>
 	<!-- Main Form -->
@@ -53,10 +58,11 @@
 </div>
 
 
-<c:if test="${not empty region}">
+
+<c:if test="${not empty showFilters}">
 	
-	<!-- Modal content -->
-	<form action="#">
+<!-- ========================================== Modal content ================================= -->
+	<form action="search">
 		<div class="modal-content">
 		  <div class="modal-header">
 		    <button formaction="<c:url value="/index"/>" class="close"><i class="fa fa-times"></i></button>
@@ -86,7 +92,7 @@
 		 </div>
 	  	
 	  	 <div class="modal-footer">
-			<button type="submit" class="close"><i class="fa fa-search"></i></button>
+			<button type="submit" class="search"><i class="fa fa-search"></i></button>
 	   	 </div>
 		</div>
 	</form>
