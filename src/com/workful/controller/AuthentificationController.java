@@ -50,7 +50,7 @@ public class AuthentificationController {
 	//login
 	//when some1 is trying to login
 	@RequestMapping("/login")
-	public String login(){
+	public String login(ModelMap model, @RequestParam(value = "logout", required=false, defaultValue="false")String logout){
 		
 		auth = SecurityContextHolder.getContext().getAuthentication();
 		 
@@ -61,6 +61,8 @@ public class AuthentificationController {
 		    /* The user is logged in :) */
 		    return "forward:/index";
 		}
+		if(!(logout.equals("false")))
+			model.addAttribute("msg", "Succesful logout");
 		return AUTH+"login";
 	}
 	
@@ -79,7 +81,7 @@ public class AuthentificationController {
 	//logout
 	//when logging out clear session
 	 @RequestMapping(value="/logout")
-	 public String logout(ModelMap model, HttpServletRequest request,HttpServletResponse response) {
+	 public String logout(HttpServletRequest request,HttpServletResponse response) {
 		 HttpSession session= request.getSession(false);
 		    SecurityContextHolder.clearContext();
 		         session= request.getSession(false);
@@ -89,10 +91,9 @@ public class AuthentificationController {
 		        for(Cookie cookie : request.getCookies()) {
 		            cookie.setMaxAge(0);
 		        }        
-		 model.addAttribute("msg", "Succesful logout");
 		 
 	  
-		 return AUTH+"login";
+		 return "redirect:/login?logout=true";
 	 
 	 }
 	 

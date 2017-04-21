@@ -1,102 +1,147 @@
-<!DOCTYPE html>
+<%@page contentType="text/html; charset=UTF-8"%>
+<%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>   
+
+
+
+<c:if test="${not empty path}">
+   	<jsp:include page="../navigation/navbar-user.jsp" >
+	   <jsp:param name="img-path" value="${path}" />
+	</jsp:include>	
+</c:if>
+		 			
+
 <html>
 <head>
-<style>
-.dropbtn {
-    background-color: #4CAF50;
-    color: white;
-    padding: 16px;
-    font-size: 16px;
-    border: none;
-    cursor: pointer;
-}
 
-.dropbtn:hover, .dropbtn:focus {
-    background-color: #3e8e41;
-}
-#myInput {
-    border-box: box-sizing;
-    background-image: url('searchicon.png');
-    background-position: 14px 12px;
-    background-repeat: no-repeat;
-    font-size: 16px;
-    padding: 14px 20px 12px 45px;
-    border: none;
-}
-
-.dropdown {
-    position: relative;
-    display: inline-block;
-}
-
-.dropdown-content {
-    display: none;
-    position: absolute;
-    background-color: #f6f6f6;
-    min-width: 230px;
-    overflow: auto;
-    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
-    z-index: 1;
-}
-
-.dropdown-content a {
-    color: black;
-    padding: 12px 16px;
-    text-decoration: none;
-    display: block;
-}
-
-.dropdown a:hover {background-color: #ddd}
-
-.show {display:block;}
-</style>
+	<title>Workful</title> 
+	<link href="${pageContext.request.contextPath}/resources/css/form.css" rel="stylesheet">   
+	<link href="${pageContext.request.contextPath}/resources/css/modal-delete-account.css" rel="stylesheet">      
+	   
+	
+	<!-- All the files that are required -->
+		<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+		<link href='http://fonts.googleapis.com/css?family=Varela+Round' rel='stylesheet' type='text/css'>
+		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+	   
 </head>
 <body>
 
-<h2>Search/Filter Dropdown</h2>
-<p>Click on the button to open the dropdown menu, and use the input field to search for a specific dropdown link.</p>
-
-<div class="dropdown">
-<button onclick="myFunction()" class="dropbtn">Dropdown</button>
-  <div id="myDropdown" class="dropdown-content">
-    <input type="text" placeholder="Search.." id="myInput" onkeyup="filterFunction()">
-    <select>
-	    <optgroup>
-		    <option>About<option>
-		    <option>Base<option>
-		    <option>Blog<option>
-		    <option>Contact<option>
-		    <option>Custom<option>
-		    <option>Support<option>
-		    <option>Tools<option>
-	    </optgroup>
-	</select>
-  </div>
+<div class="text-center" style="text-align:center;">
+	<div class="logo"><h1 style="color:black"><strong>PROFILE</strong></h1></div>
 </div>
 
-<script>
-/* When the user clicks on the button,
-toggle between hiding and showing the dropdown content */
-function myFunction() {
-    document.getElementById("myDropdown").classList.toggle("show");
-}
+<!-- Error/Successful -->
+<div class="text-center" style="text-align:center;">
+	<div class="form-1">
+			<c:if test="${not empty error}">
+				<div class="error">${error}</div>
+			</c:if>
+			<c:if test="${not empty msg}">
+				<div class="msg">${msg}</div>
+			</c:if>
+	</div>
+</div>
 
-function filterFunction() {
-    var input, filter, ul, li, a, i;
-    input = document.getElementById("myInput");
-    filter = input.value.toUpperCase();
-    div = document.getElementById("myDropdown");
-    a = div.getElementsByTagName("option");
-    for (i = 0; i < a.length; i++) {
-        if (a[i].innerHTML.toUpperCase().indexOf(filter) > -1) {
-            a[i].style.display = "";
-        } else {
-            a[i].style.display = "none";
-        }
-    }
-}
-</script>
+<c:url var="create_url"  value="/user/create-profile" />
+
+
+<!--  ======================== PROFILE FORM ========================================== -->
+
+<div class="text-center" style="text-align:center;">
+	<div class="logo">create profile</div>
+	
+	<!-- Main Form -->
+	<div class="form-1">
+	
+		<form:form class="text-left" modelAtribute="profileForm" action="${create_url}" method="get">		
+			<div class="main-form">						
+				
+				<button type="reset" class="filter"><i class="fa fa-repeat"></i></button>
+			
+				<div class="group">
+				
+					<div class="form-group">
+						<label>name</label>
+						<input type="text" required class="form-control" name="name">
+					</div>
+					<div class="form-group">
+						<label>surname</label>
+						<input type="text" required class="form-control" name="surname">
+					</div>
+					<div class="form-group">
+						<label>title</label>
+						<input type="text" required class="form-control" name="title">
+					</div>
+					
+					<div class="form-group">
+						<label>city</label>
+						<br>
+				    	<!-- City filter -->
+						<select class="rounded" name="cityId">
+						    <c:forEach items="${city}" var="afis">
+					    		<option value="${afis.getId()}">${afis.getName()}</option>
+							</c:forEach>
+						</select>
+					</div>
+	
+					<div class="form-group">
+						<label>category</label>
+						<br>
+						<!-- CATEGORY filter -->
+						<select class="rounded" name="categoryId">
+						    <c:forEach items="${category}" var="afis">
+					    		<option value="${afis.getId()}">${afis.getName()}</option>
+							</c:forEach>
+						</select>
+				   </div>
+				   
+				   <div class="form-group">
+						<label>  telephone</label>
+						<input type="tel" required pattern="[0-9]{10}" maxlength="10" class="form-control" name="telephone">
+					</div>
+				   
+				   	<div class="form-group">
+						<label>about you</label>
+						<textarea rows="10" required class="form-control" name="description"></textarea>
+					</div>
+					
+					
+				</div>
+				<button type="submit" class="button"><i class="fa fa-chevron-right"></i></button>
+			</div>
+		</form:form>
+		
+	</div>
+	<!-- end:Form -->
+</div>
+
+<br>
+
+<!-- ========================================== Image change ================================= -->
+
+<div class="text-center" style="text-align:center;">
+	<div class="logo">Change Picture</div>
+	<!-- Main Form -->
+	<div class="form-1">
+		
+		<form action="./update-image?${_csrf.parameterName}=${_csrf.token}" method="post" enctype="multipart/form-data">
+			<div class="main-form">
+			
+				<label>changing the picture will automatically change your account picture</label>
+				
+				<input type="file" name="image">
+				
+				<button type="submit" class="button"><i class="fa fa-chevron-right"></i></button>
+			</div>
+		</form>
+		
+	</div>
+</div>
+
+
+<br>
+
 
 </body>
 </html>
-

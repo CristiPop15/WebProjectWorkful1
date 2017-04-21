@@ -22,7 +22,7 @@
     </div>
     
     <ul class="nav navbar-nav navbar-right">
-      <li><a href="<c:url value='/enrole' />"><span class="glyphicon glyphicon-user"></span> Register as Worker</a></li>
+      <li><a href="<c:url value='user/enrole' />"><span class="glyphicon glyphicon-user"></span> Register as Worker</a></li>
       <li><a href="<c:url value='/login' />"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>
     </ul>
   </div>

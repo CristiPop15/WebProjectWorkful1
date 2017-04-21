@@ -38,6 +38,8 @@
 				<p>When you fill in your registered email address, you will be sent instructions on how to reset your password.</p>
 			</div>
 			<div class="main-form">
+			<button type="reset" class="filter"><i class="fa fa-repeat"></i></button>
+			
 				<div class="group">
 					<div class="form-group">
 						<label>Email address</label>

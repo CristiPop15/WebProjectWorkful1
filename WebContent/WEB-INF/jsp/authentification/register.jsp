@@ -36,6 +36,8 @@
 	<div class="form-1">
 		<form:form class="text-left" modelAtribute="registrationForm" action="registration" method="POST">
 			<div class="main-form">
+			<button type="reset" class="filter"><i class="fa fa-repeat"></i></button>
+			
 				<div class="group">
 				
 				<!-- E-MAIL -->	

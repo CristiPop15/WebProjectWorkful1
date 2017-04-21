@@ -9,8 +9,10 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.0/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
   <link href='http://fonts.googleapis.com/css?family=Varela+Round' rel='stylesheet' type='text/css'>
-  
+ 
   
 </head>
 
@@ -23,7 +25,11 @@
       <a class="navbar-brand" href="<c:url value='/index' />">Workful</a>
     </div>
     
-    <ul class="nav navbar-nav navbar-right">
+	<ul class="nav navbar-nav navbar-right">
+    
+   	   <li>
+       		<a style="border-top:15px" href="${pageContext.request.contextPath}/user/enrole"><span class="glyphicon glyphicon-user"></span> Work House</a>
+       </li>
 		<li style="padding:0px">
 			<a style="padding:0px" href="<c:url value='/user/settings' />">  
 				<img src="<%= request.getParameter("img-path")%>" class="img-circle" width="50" height="50"/>				

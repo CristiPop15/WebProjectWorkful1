@@ -36,6 +36,8 @@
 	<div class="form-1">
 		<form id="form" name='loginForm' class="text-left" action="<c:url value='/login' />" method="POST">
 			<div class="main-form">
+			<button type="reset" class="filter"><i class="fa fa-repeat"></i></button>
+			
 				<div class="group">
 					<div class="form-group">
 						<label for="lg_username">Mail</label>
@@ -43,7 +45,7 @@
 						<input type="text" required class="form-control" id="lg_username" name="username" >
 					</div>
 					<div class="form-group">
-						<label for="lg_password">Parol&#259</label>
+						<label for="lg_password">Parola</label>
 						<i class="fa fa-lock"></i>
 						<input type="password" required class="form-control" id="lg_password" name="password">
 					</div>
@@ -52,8 +54,8 @@
 				<button type="submit" class="button"><i class="fa fa-chevron-right"></i></button>
 			</div>
 			<div class="etc-form">
-				<p>a&#355i uitat parola? <a href="<c:url value='/password-recover' />">click aici</a></p>
-				<p>creeaz&#259 cont nou? <a href="<c:url value='/register' />">cont nou</a></p>
+				<p>ati uitat parola? <a href="<c:url value='/password-recover' />">click aici</a></p>
+				<p>creeaza cont nou? <a href="<c:url value='/register' />">cont nou</a></p>
 			</div>
 			<input type="hidden" name="${_csrf.parameterName}"
 			value="${_csrf.token}" />

@@ -2,6 +2,8 @@ package com.workful.controller;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Map;
 
 import javax.imageio.IIOException;
 import javax.imageio.ImageIO;
@@ -10,6 +12,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -17,7 +20,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.workful.handler.DBHandler;
 import com.workful.handler.ImageHandler;
+import com.workful.templates.CommonFields;
 import com.workful.templates.CurrentPerson;
+import com.workful.templates.Profile;
 
 @Controller
 @RequestMapping("/user")
@@ -32,24 +37,6 @@ public class UserSettingsController {
 	private CurrentPerson current;
 	
 	
-	//Constructor
-	public UserSettingsController(){
-
-		try{
-			email = SecurityContextHolder.getContext().getAuthentication().getName();
-		}catch(Exception e){
-			e.printStackTrace();
-		}
-		
-		id = db.getPersonId(email);
-		imgPath = db.getImagePath(id);
-		
-		if(imgPath == null)
-			imgPath = "../resources/img/default.png";
-		
-	}
-
-	
 			
 	//URL to redirect when update is successful or an errror appeared
 	private final String ERROR = "redirect:/user/settings-error?error=";
@@ -60,6 +47,9 @@ public class UserSettingsController {
 	
 	//for redirecting
 	private final String userSettings = "user/";
+	private final String userRedirect = "redirect:/";
+
+	
 	
 	
 	//---------ERRORS-------------------------------------------
@@ -85,20 +75,7 @@ public class UserSettingsController {
 	public String showSettings(ModelMap model, @RequestParam(value="error", required=false, defaultValue="false")String error,
 			@RequestParam(value="success", required=false, defaultValue="false")String success){
 		
-		try{
-			email = SecurityContextHolder.getContext().getAuthentication().getName();
-		}catch(Exception e){
-			e.printStackTrace();
-		}
-		
-		id = db.getPersonId(email);
-		imgPath = db.getImagePath(id);
-		
-		if(imgPath == null)
-			imgPath = "../resources/img/default.png";
-		
-		
-		System.out.println(email);
+		current = getPerson();
 				
 		
 		if(!(error.equals("false"))){
@@ -111,7 +88,7 @@ public class UserSettingsController {
 			return userSettings+"settings";
 		}
 		
-		model.addAttribute("path", imgPath);
+		model.addAttribute("path", current.getImgPath());
 		
 		return userSettings+"settings";
 	}
@@ -128,18 +105,7 @@ public class UserSettingsController {
 	public String changePassword(@RequestParam("new")String newPassword,
 			@RequestParam("confirm")String confirm){
 		
-		try{
-			email = SecurityContextHolder.getContext().getAuthentication().getName();
-		}catch(Exception e){
-			e.printStackTrace();
-		}
-		
-		id = db.getPersonId(email);
-		imgPath = db.getImagePath(id);
-		
-		if(imgPath == null)
-			imgPath = "../resources/img/default.png";
-		
+		current = getPerson();
 		
 				
 		//if the new password is not the same as the confirmed one
@@ -155,7 +121,7 @@ public class UserSettingsController {
 	
 	
 		//update
-		if(db.updateUserPassword(email, hashedPassword))
+		if(db.updateUserPassword(current.getEmail(), hashedPassword))
 			return SUCCESS+PASSWORD_SUCCESS;
 		
 		//return error if something happened
@@ -164,25 +130,13 @@ public class UserSettingsController {
 	}
 	
 	
-	
 	/**
 	 * Upload single file using Spring Controller
 	 */
 	@RequestMapping(value = "/update-image", method = RequestMethod.POST)
 	public String uploadImage(@RequestParam("image") MultipartFile file) {
 
-		try{
-			email = SecurityContextHolder.getContext().getAuthentication().getName();
-		}catch(Exception e){
-			e.printStackTrace();
-		}
-		
-		id = db.getPersonId(email);
-		imgPath = db.getImagePath(id);
-		
-		if(imgPath == null)
-			imgPath = "../resources/img/default.png";
-		
+		current = getPerson();
 
 		if (!file.isEmpty()) {
 			
@@ -196,15 +150,14 @@ public class UserSettingsController {
 					}
 						
 					
-					ImageHandler.saveImage(bytes, email);
-					db.updateImage(newPath+email+".png", id);
+					ImageHandler.saveImage(bytes, current.getEmail());
+					db.updateImage(newPath+email+".png", current.getId());
 
 				} catch (IOException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 
-				return userSettings+"settings";
+				return userRedirect+"settings";
 			
 
 		}else
@@ -213,19 +166,7 @@ public class UserSettingsController {
 	}
 	
 	
-	/**
-	 *  Ask user if he is certain that he wants to delete his account
-	 * @param model
-	 * @return
-	 */
-	@RequestMapping("delete-account-question")
-	public String delete_account_question(ModelMap model){
-		
-		model.addAttribute("path", imgPath);
-		model.addAttribute("popup","true");
-		return userSettings+"settings";
-
-	}
+	
 	
 	
 	/**
@@ -235,8 +176,9 @@ public class UserSettingsController {
 	@RequestMapping("delete-account")
 	public String delete_account(){
 		
+		current = getPerson();
 		
-		if(db.deleteUser(email)){
+		if(db.deleteUser(current.getEmail())){
 			return SUCCESS+USER_DELETED;
 		}
 		return ERROR+SOME_ERROR;
@@ -247,22 +189,11 @@ public class UserSettingsController {
 	
 	//====================== Errors handler ============================
 	@RequestMapping("/settings-error")
-	public String setting_error(ModelMap model, @RequestParam("error")String error){
+	public ModelMap setting_error(ModelMap model, @RequestParam("error")String error){
 		
-		try{
-			email = SecurityContextHolder.getContext().getAuthentication().getName();
-		}catch(Exception e){
-			e.printStackTrace();
-		}
+		current = getPerson();
 		
-		id = db.getPersonId(email);
-		imgPath = db.getImagePath(id);
-		
-		if(imgPath == null)
-			imgPath = "../resources/img/default.png";
-		
-		
-		model.addAttribute("path", imgPath);
+		model.addAttribute("path", current.getImgPath());
 
 		if(error.equals(PASSWORD_MISMATCH))
 			model.addAttribute("error", "Password missmatch");
@@ -279,7 +210,7 @@ public class UserSettingsController {
 			model.addAttribute("error", "An unknown type of image. Please select jpg and png images");
 		}
 		
-		return userSettings+"settings";
+		return model;
 	}
 	
 	
@@ -288,6 +219,127 @@ public class UserSettingsController {
 	@RequestMapping("/settings-success")
 	public String setting_success(ModelMap model, @RequestParam("success")String success){
 		
+		current = getPerson();
+		
+		if(success.equals(PASSWORD_SUCCESS)){
+			model.addAttribute("msg", "Password changed successfully. Please log out and log in with new password");
+			model.addAttribute("path", current.getImgPath());
+		}
+		if(success.equals(USER_DELETED))
+			return "redirect:/logout";
+		
+		model.addAttribute("path", current.getImgPath());
+	
+		
+		return userSettings+"settings";
+	}
+	
+	
+	
+	
+	/*
+	 *  ///////////////////  //////  PROFILE  ////////   ////////////////////	
+	 * */
+	
+
+	@RequestMapping("/enrole")
+	public String enroleAsWorker(ModelMap model, @RequestParam(value = "error", required=false, defaultValue="no")String error){
+		
+		current = getPerson();
+		
+		if(!(db.getWorkerId(current.getId()) == 0))
+			return "redirect:/user/update-profile";
+		
+		model.addAttribute("path", current.getImgPath());
+		model.addAttribute("city",db.getAllCities());
+		model.addAttribute("category", db.getCategory());
+
+		if(!error.equals("no"))
+			model.addAttribute("error", error);
+		
+		return "user/enrole";
+	}
+	
+	
+	@RequestMapping("/create-profile")
+	public String profileWorker(ModelMap model, @ModelAttribute("profileForm") Profile profile, 
+			@RequestParam("cityId") String city, @RequestParam("categoryId")String category){
+		
+		current = getPerson();
+		
+		
+		model.addAttribute("path", current.getImgPath());
+		model.addAttribute("city",db.getAllCities());
+		model.addAttribute("category", db.getCategory());
+		
+		
+		profile.setCityId(city);
+		profile.setCategoryId(category);
+		
+		if(db.registerNewProfile(profile, current.getId()))
+			return "redirect:/user/skill-level";
+		
+		return "user/enrole?error=Some error occured";
+	}
+	
+	@RequestMapping("skill-level")
+	public ModelMap skillLvl(ModelMap model){
+		
+		current = getPerson();
+		
+		model.addAttribute("path", current.getImgPath());
+		
+		ArrayList<CommonFields> skills = db.getSkillFromCat(db.getWorkerCategory(current.getId()));
+		
+		model.addAttribute("skills", skills);
+		
+		return model;
+		
+	}
+
+	@RequestMapping("/update-skills")
+	public String update_skills(@RequestParam Map<String, String> params, ModelMap model){
+		
+		current = getPerson();
+		int profileId = db.getWorkerId(current.getId());
+		
+		
+		ArrayList<CommonFields> skills = db.getSkillFromCat(db.getWorkerCategory(current.getId()));
+
+		for(CommonFields skill: skills){
+			System.out.println(params.get(skill.getId()));
+			db.updateProfileSkills(Integer.parseInt(params.get(String.valueOf(skill.getId()))), 
+					skill.getId(), profileId);
+		}
+		
+		return "redirect:/index";
+	}
+	
+	@RequestMapping("/update-profile")
+	public ModelMap update_profile(ModelMap model, @RequestParam(value="popup", required=false, defaultValue="no")String popup){
+		
+		current = getPerson();
+		
+		model.addAttribute("path", current.getImgPath());
+		
+		if(!(popup.equals("no")))
+			model.addAttribute("popup", popup);
+		
+		return model;
+	}
+	
+	@RequestMapping("/delete-profile")
+	public String delete_profile(){
+		
+		current = getPerson();
+		
+		db.deleteWorkerProfile(db.getWorkerId(current.getId()));
+		
+		return "redirect:/index";
+	}
+	
+	
+	private CurrentPerson getPerson(){
 		try{
 			email = SecurityContextHolder.getContext().getAuthentication().getName();
 		}catch(Exception e){
@@ -300,18 +352,7 @@ public class UserSettingsController {
 		if(imgPath == null)
 			imgPath = "../resources/img/default.png";
 		
+		return new CurrentPerson(id,email,imgPath);
 		
-		if(success.equals(PASSWORD_SUCCESS)){
-			model.addAttribute("msg", "Password changed successfully. Please log out and log in with new password");
-			model.addAttribute("path", current.getImgPath());
-		}
-		if(success.equals(USER_DELETED))
-			return "redirect:/logout";
-		
-		model.addAttribute("path", imgPath);
-	
-		
-		return userSettings+"settings";
 	}
-	
 }

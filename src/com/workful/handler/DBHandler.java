@@ -11,17 +11,21 @@ import java.util.ArrayList;
 import com.workful.templates.Account;
 import com.workful.templates.Category;
 import com.workful.templates.City;
+import com.workful.templates.Comment;
 import com.workful.templates.CommonFields;
-import com.workful.templates.Person;
+import com.workful.templates.Profile;
 import com.workful.templates.Region;
+import com.workful.templates.SearchObj;
+import com.workful.templates.SearchResult;
 import com.workful.templates.Skill;
+import com.workful.templates.SkillLvl;
 
 public class DBHandler {
 
 	//statement used for executing the query
     private Statement st;
     
-    //result set to browse through the result of the query(un fel de fetch array din php)
+    //result set to browse through the result of the query
     private ResultSet res;
     
     //connection pool
@@ -47,7 +51,6 @@ public class DBHandler {
     	try {
 			dataSource = DataSourcePool.getInstance();
 		} catch (IOException | SQLException | PropertyVetoException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
     }
@@ -76,7 +79,6 @@ public class DBHandler {
 				statement = connection.createStatement();
 
 			} catch (SQLException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}	    	
 	    	int accountId = 0;
@@ -107,7 +109,38 @@ public class DBHandler {
 			return getAccountId(email);
 		}
 
-	    
+	    public int getWorkerId(int accountId){
+	    	Connection connection = null;
+	    	Statement statement = null;
+	    	ResultSet result = null;
+	    	
+	    	try {
+	    		connection = dataSource.getConnection();
+				statement = connection.createStatement();
+
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}	
+	    	
+	    	int id_muncitor = 0;
+	        String query = "SELECT id_muncitor FROM muncitor WHERE id_cont="+accountId+"";
+	       try {
+	    	   result = statement.executeQuery(query);
+	           if(result.next()) {
+	        	   id_muncitor = result.getInt("id_muncitor");
+	           }
+	       }
+	       catch (Exception e){
+	           e.printStackTrace();
+	       }finally{
+	    	   if (result != null) try { result.close(); } catch (SQLException e) {e.printStackTrace();}
+	            if (statement != null) try { statement.close(); } catch (SQLException e) {e.printStackTrace();}
+	            if (connection != null) try { connection.close(); } catch (SQLException e) {e.printStackTrace();}
+				
+	       }
+	       
+	        return id_muncitor;
+	    }
 	    
 	    ///use to get region's id providing region name
 	    //private because it's used within this class
@@ -122,7 +155,6 @@ public class DBHandler {
 				statement = connection.createStatement();
 
 			} catch (SQLException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}	
 	    	
@@ -198,7 +230,6 @@ public class DBHandler {
 				statement = connection.createStatement();
 
 			} catch (SQLException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 	    	
@@ -276,42 +307,67 @@ public class DBHandler {
     
     public String getSkillName(int skillId){
     	
-    	createStatement();
+
+    	Connection connection = null;
+    	Statement statement = null;
+    	ResultSet result = null;
     	
+    	try {
+    		connection = dataSource.getConnection();
+			statement = connection.createStatement();
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+    	    	
     	String skillName = null;
         String query = "SELECT nume_aptitudine FROM aptitudini WHERE id_aptitudine="+skillId;
         try {
-            res = st.executeQuery(query);
-            if(res.next()) {
-            	skillName = res.getString("nume_aptitudine");
+        	result = statement.executeQuery(query);
+            if(result.next()) {
+            	skillName = result.getString("nume_aptitudine");
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
         finally{
-	    	   closeStatement();
-	       }
+        	 if (result != null) try { result.close(); } catch (SQLException e) {e.printStackTrace();}
+		      if (statement != null) try { statement.close(); } catch (SQLException e) {e.printStackTrace();}
+		      if (connection != null) try { connection.close(); } catch (SQLException e) {e.printStackTrace();}
+				       }
   
         return skillName;
     }
     
     public String getCategoryName(int categoryId){
 
-    	createStatement();
+    	Connection connection = null;
+    	Statement statement = null;
+    	ResultSet result = null;
+    	
+    	try {
+    		connection = dataSource.getConnection();
+			statement = connection.createStatement();
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
     	
     	String categoryName = null;
         String query = "SELECT nume_categorie FROM categorie WHERE id_categorie="+categoryId;
         try {
-            res = st.executeQuery(query);
-            if(res.next()) {
-            	categoryName = res.getString("nume_categorie");
+        	result = statement.executeQuery(query);
+            if(result.next()) {
+            	categoryName = result.getString("nume_categorie");
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
         finally{
-	    	   closeStatement();
-
+        	 if (result != null) try { result.close(); } catch (SQLException e) {e.printStackTrace();}
+	         if (statement != null) try { statement.close(); } catch (SQLException e) {e.printStackTrace();}
+	         if (connection != null) try { connection.close(); } catch (SQLException e) {e.printStackTrace();}
+				
 	       }
   
         return categoryName;
@@ -341,26 +397,40 @@ public class DBHandler {
 
     public String getCityName(int cityId){
 
-    	createStatement();
+    	Connection connection = null;
+    	Statement statement = null;
+    	ResultSet result = null;
+    	
+    	try {
+    		connection = dataSource.getConnection();
+			statement = connection.createStatement();
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
     	
     	String cityName = null;
         String query = "SELECT nume_oras FROM oras WHERE id_oras="+cityId;
         try {
-            res = st.executeQuery(query);
-            if(res.next()) {
-            	cityName = res.getString("nume_regiune");
+        	result = statement.executeQuery(query);
+            if(result.next()) {
+            	cityName = result.getString("nume_oras");
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
         finally{	    	   
-        	closeStatement();
-
+        	 if (result != null) try { result.close(); } catch (SQLException e) {e.printStackTrace();}
+	         if (statement != null) try { statement.close(); } catch (SQLException e) {e.printStackTrace();}
+	         if (connection != null) try { connection.close(); } catch (SQLException e) {e.printStackTrace();}
+			
 	       }
 
   
         return cityName;
     }
+    
+    
     
     /**
      * -------------------END GET Names ------------------/////////
@@ -375,58 +445,852 @@ public class DBHandler {
 	     * 
 	     */
 	    
-	    //use to get search result
-	    //TODO modify
-	    public ArrayList<Person> getSearchResult(int idRegion, int idCity, String search){
+	  //------------------------------------- SEARCH ----------------------------------
+    
+  //use to get search result
+    public SearchObj getSearchResult(int cityId, int categoryId, String searchQuery, int limit) {
+    	
+    	createStatement();
+    	
+    	SearchObj obj= new SearchObj();
+    	
+        ArrayList<SearchResult> listaProfil = new ArrayList<SearchResult>();
+
+        try {
+            String query = "SELECT id_cont, id_muncitor, id_categorie, id_oras, name, prenume, titlu "
+            		+ "FROM muncitor WHERE id_categorie="+categoryId+
+            		"AND id_oras="+cityId+" AND "
+            		+ "titlu LIKE '%"+searchQuery+"%' LIMIT "+(limit-1)+",10";
+            res = st.executeQuery(query);
+
+            System.out.println(query);
+
+
+            while(res.next()){
+            	SearchResult searchResult = new SearchResult();
+            	
+            	searchResult.setId(res.getInt("id_muncitor"));
+            	searchResult.setCity(getCityName(res.getInt("id_oras")));
+            	searchResult.setCategory(getCategoryName(res.getInt("id_categorie")));
+            	searchResult.setName((res.getString("name")));
+            	searchResult.setSurname(res.getString("prenume"));
+            	searchResult.setTitle(res.getString("titlu"));
+            	if(getImagePath(res.getInt("id_cont"))== null)
+            		searchResult.setImgPath("./resources/img/default.png");
+            	else
+            		searchResult.setImgPath(getImagePath(res.getInt("id_cont")));
+
+            	listaProfil.add(searchResult);
+                }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        finally{
+	    	   closeStatement();
+	       }
+        
+        obj.setList(listaProfil);
+        obj.setRows(getRowCount(cityId, categoryId, searchQuery));
+
+        return obj;
+    }
+    
+  //use to get search result without query
+    public SearchObj getSearchResult(int cityId, int categoryId, int limit) {
+    	
+    	createStatement();
+    	
+    	SearchObj obj= new SearchObj();
+    	
+        ArrayList<SearchResult> listaProfil = new ArrayList<SearchResult>();
+
+        try {
+            String query = "SELECT id_cont, id_muncitor, id_categorie, id_oras, name, prenume, titlu "
+            		+ "FROM muncitor WHERE id_categorie="+categoryId+
+            		" AND id_oras="+cityId+" LIMIT "+(limit-1)+",10";
+            
+            res = st.executeQuery(query);
+            
+            System.out.println(query);
+            
+            while(res.next()){
+            	SearchResult searchResult = new SearchResult();
+            	
+            	searchResult.setId(res.getInt("id_muncitor"));
+            	searchResult.setCity(getCityName(res.getInt("id_oras")));
+            	searchResult.setCategory(getCategoryName(res.getInt("id_categorie")));
+            	searchResult.setName((res.getString("name")));
+            	searchResult.setSurname(res.getString("prenume"));
+            	searchResult.setTitle(res.getString("titlu"));
+            	if(getImagePath(res.getInt("id_cont"))== null)
+            		searchResult.setImgPath("./resources/img/default.png");
+            	else
+            		searchResult.setImgPath(getImagePath(res.getInt("id_cont")));
+
+            	listaProfil.add(searchResult);
+                }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        finally{
+	    	   closeStatement();
+	       }
+        
+        obj.setList(listaProfil);
+        obj.setRows(getRowCount(cityId, categoryId));
+        return obj;
+    }
+	    
+  //use to get search result with query only
+    public SearchObj getSearchResult(String searchQuery, int limit) {
+    	
+    	createStatement();
+    	
+    	SearchObj obj= new SearchObj();
+    	
+        ArrayList<SearchResult> listaProfil = new ArrayList<SearchResult>();
+
+        try {
+            String query = "SELECT id_cont, id_muncitor, id_categorie, id_oras, name, prenume, titlu "
+            		+ "FROM muncitor WHERE titlu LIKE '%"+searchQuery+"%' LIMIT "+(limit-1)+",10";
+            res = st.executeQuery(query);
+
+            System.out.println(query);
+
+
+            while(res.next()){
+            	SearchResult searchResult = new SearchResult();
+            	
+            	searchResult.setId(res.getInt("id_muncitor"));
+            	searchResult.setCity(getCityName(res.getInt("id_oras")));
+            	searchResult.setCategory(getCategoryName(res.getInt("id_categorie")));
+            	searchResult.setName((res.getString("name")));
+            	searchResult.setSurname(res.getString("prenume"));
+            	searchResult.setTitle(res.getString("titlu"));
+            	if(getImagePath(res.getInt("id_cont"))== null)
+            		searchResult.setImgPath("./resources/img/default.png");
+            	else
+            		searchResult.setImgPath(getImagePath(res.getInt("id_cont")));
+
+            	listaProfil.add(searchResult);
+                }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        finally{
+	    	   closeStatement();
+	       }
+
+        obj.setList(listaProfil);
+        obj.setRows(getRowCount(searchQuery));
+    	
+        
+        return obj;
+    }
+
+  //use to get search result from query and category
+    public SearchObj getSearchResult(int categoryId, String searchQuery, int limit) {
+    	
+    	createStatement();
+    	
+    	SearchObj obj= new SearchObj();
+    	
+        ArrayList<SearchResult> listaProfil = new ArrayList<SearchResult>();
+
+        try {
+            String query = "SELECT id_cont, id_muncitor, id_categorie, id_oras, name, prenume, titlu "
+            		+ "FROM muncitor WHERE titlu LIKE '%"+searchQuery+"%' "
+            				+ " AND id_categorie="+categoryId+" LIMIT "+(limit-1)+",10";
+            res = st.executeQuery(query);
+
+            System.out.println(query);
+
+
+            while(res.next()){
+            	SearchResult searchResult = new SearchResult();
+            	
+            	searchResult.setId(res.getInt("id_muncitor"));
+            	searchResult.setCity(getCityName(res.getInt("id_oras")));
+            	searchResult.setCategory(getCategoryName(res.getInt("id_categorie")));
+            	searchResult.setName((res.getString("name")));
+            	searchResult.setSurname(res.getString("prenume"));
+            	searchResult.setTitle(res.getString("titlu"));
+            	if(getImagePath(res.getInt("id_cont"))== null)
+            		searchResult.setImgPath("./resources/img/default.png");
+            	else
+            		searchResult.setImgPath(getImagePath(res.getInt("id_cont")));
+
+            	listaProfil.add(searchResult);
+                }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        finally{
+	    	   closeStatement();
+	       }
+
+        obj.setList(listaProfil);
+        obj.setRows(getRowCount(categoryId, searchQuery));
+        
+        return obj;
+    }
+    
+  //use to get search result from query and city
+    public SearchObj getSearchCityResult(int cityId, String searchQuery, int limit) {
+    	
+    	createStatement();
+    	
+    	SearchObj obj= new SearchObj();
+    	
+        ArrayList<SearchResult> listaProfil = new ArrayList<SearchResult>();
+
+        try {
+            String query = "SELECT id_cont, id_muncitor, id_categorie, id_oras, name, prenume, titlu "
+            		+ "FROM muncitor WHERE titlu LIKE '%"+searchQuery+"%' "
+            				+ " AND id_oras="+cityId+" LIMIT "+(limit-1)+",10";
+            res = st.executeQuery(query);
+
+            System.out.println(query);
+
+
+            while(res.next()){
+            	SearchResult searchResult = new SearchResult();
+            	
+            	searchResult.setId(res.getInt("id_muncitor"));
+            	searchResult.setCity(getCityName(res.getInt("id_oras")));
+            	searchResult.setCategory(getCategoryName(res.getInt("id_categorie")));
+            	searchResult.setName((res.getString("name")));
+            	searchResult.setSurname(res.getString("prenume"));
+            	searchResult.setTitle(res.getString("titlu"));
+            	if(getImagePath(res.getInt("id_cont"))== null)
+            		searchResult.setImgPath("./resources/img/default.png");
+            	else
+            		searchResult.setImgPath(getImagePath(res.getInt("id_cont")));
+
+            	listaProfil.add(searchResult);
+                }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        finally{
+	    	   closeStatement();
+	       }
+        
+        obj.setList(listaProfil);
+        obj.setRows(getRowCountC(cityId, searchQuery));
+
+        return obj;
+    }
+    
+  //use to get search result from city only
+    public SearchObj getSearchCityResult(int cityId, int limit) {
+    	
+    	createStatement();
+    	
+    	SearchObj obj= new SearchObj();
+    	
+        ArrayList<SearchResult> listaProfil = new ArrayList<SearchResult>();
+
+        try {
+            String query = "SELECT id_cont, id_muncitor, id_categorie, id_oras, name, prenume, titlu "
+            		+ "FROM muncitor WHERE id_oras="+cityId+" LIMIT "+(limit-1)+",10";
+            res = st.executeQuery(query);
+
+            System.out.println(query);
+
+
+            while(res.next()){
+            	SearchResult searchResult = new SearchResult();
+            	
+            	searchResult.setId(res.getInt("id_muncitor"));
+            	searchResult.setCity(getCityName(res.getInt("id_oras")));
+            	searchResult.setCategory(getCategoryName(res.getInt("id_categorie")));
+            	searchResult.setName((res.getString("name")));
+            	searchResult.setSurname(res.getString("prenume"));
+            	searchResult.setTitle(res.getString("titlu"));
+            	if(getImagePath(res.getInt("id_cont"))== null)
+            		searchResult.setImgPath("./resources/img/default.png");
+            	else
+            		searchResult.setImgPath(getImagePath(res.getInt("id_cont")));
+
+            	listaProfil.add(searchResult);
+                }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        finally{
+	    	   closeStatement();
+	       }
+
+        obj.setList(listaProfil);
+        obj.setRows(getRowCountC(cityId));
+        
+        return obj;
+    }
+    
+  //use to get search result from category only
+    public SearchObj getSearchResult(int categoryId, int limit) {
+    	
+    	createStatement();
+    	
+    	SearchObj obj= new SearchObj();
+    	
+        ArrayList<SearchResult> listaProfil = new ArrayList<SearchResult>();
+
+        try {
+            String query = "SELECT id_cont, id_muncitor, id_categorie, id_oras, name, prenume, titlu "
+            		+ "FROM muncitor WHERE id_categorie="+categoryId+" LIMIT "+(limit-1)+",10";
+
+        
+            res = st.executeQuery(query);
+            
+            System.out.println(query);
+
+
+            while(res.next()){
+            	SearchResult searchResult = new SearchResult();
+            	
+            	searchResult.setId(res.getInt("id_muncitor"));
+            	searchResult.setCity(getCityName(res.getInt("id_oras")));
+            	searchResult.setCategory(getCategoryName(res.getInt("id_categorie")));
+            	searchResult.setName((res.getString("name")));
+            	searchResult.setSurname(res.getString("prenume"));
+            	searchResult.setTitle(res.getString("titlu"));
+            	if(getImagePath(res.getInt("id_cont"))== null)
+            		searchResult.setImgPath("./resources/img/default.png");
+            	else
+            		searchResult.setImgPath(getImagePath(res.getInt("id_cont")));
+
+            	listaProfil.add(searchResult);
+                }
+            
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        finally{
+	    	   closeStatement();
+	       }
+        
+        
+        obj.setList(listaProfil);
+        obj.setRows(getRowCount(categoryId));
+
+        return obj;
+    }
+    
+    //if user does not provide anything
+    public SearchObj getAllSearchResult(int limit){
+    	
+    	createStatement();
+    	
+    	SearchObj obj= new SearchObj();
+    	
+        ArrayList<SearchResult> listaProfil = new ArrayList<SearchResult>();
+
+        try {
+            String query = "SELECT id_cont, id_muncitor, id_categorie, id_oras, name, prenume, titlu "
+            		+ "FROM muncitor  LIMIT "+(limit-1)+",10";
+           
+            res = st.executeQuery(query);
+
+            System.out.println(query);
+
+
+            while(res.next()){
+            	SearchResult searchResult = new SearchResult();
+            	
+            	searchResult.setId(res.getInt("id_muncitor"));
+            	searchResult.setCity(getCityName(res.getInt("id_oras")));
+            	searchResult.setCategory(getCategoryName(res.getInt("id_categorie")));
+            	searchResult.setName((res.getString("name")));
+            	searchResult.setSurname(res.getString("prenume"));
+            	searchResult.setTitle(res.getString("titlu"));
+            	if(getImagePath(res.getInt("id_cont"))== null)
+            		searchResult.setImgPath("./resources/img/default.png");
+            	else
+            		searchResult.setImgPath(getImagePath(res.getInt("id_cont")));
+
+
+            	listaProfil.add(searchResult);
+                }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("Eroare");
+        }
+        finally{
+	    	   closeStatement();
+	       }
+        System.out.println(listaProfil);
+
+        
+        obj.setList(listaProfil);
+        obj.setRows(getRowCount());
+
+        return obj;
+    }
+
+    
+    //------------------------------------- SEARCH END ----------------------------------
+    
+        
+    
+	  //------------------------------------- ROW COUNT ----------------------------------
+	  
+    	private int getRowCount(int cityId, int categoryId, String searchQuery){
+    		
+    		Connection connection = null;
+	    	Statement statement = null;
+	    	ResultSet result = null;
 	    	
-	    	createStatement();
+	    	try {
+	    		connection = dataSource.getConnection();
+				statement = connection.createStatement();
+
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}	
+    		
+    		int nr = 0;
+    		        	
+            try {
+                String query = "SELECT COUNT(*) AS count "
+                		+ "FROM muncitor WHERE id_categorie="+categoryId+
+                		" AND id_oras="+cityId+" AND "
+                		+ "titlu LIKE '%"+searchQuery+"%'";
+                
+                result = statement.executeQuery(query);
+
+
+                if(result.next()){
+                	nr = result.getInt("count");
+                    }
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            finally{
+            	if (result != null) try { result.close(); } catch (SQLException e) {e.printStackTrace();}
+	            if (statement != null) try { statement.close(); } catch (SQLException e) {e.printStackTrace();}
+	            if (connection != null) try { connection.close(); } catch (SQLException e) {e.printStackTrace();}
+	            
+            }
+            
+            System.out.println("Rows: "+nr);
+
+    		
+    		return nr;
+    	}
+    	
+    	private int getRowCount(int cityId, int categoryId){
+    		
+    		Connection connection = null;
+	    	Statement statement = null;
+	    	ResultSet result = null;
 	    	
-	        ArrayList<Person> arrayList = new ArrayList<Person>();
+	    	try {
+	    		connection = dataSource.getConnection();
+				statement = connection.createStatement();
+
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}	
+    		
+    		int nr = 0;
+    		        	
+            try {
+                String query = "SELECT COUNT(*) AS count "
+                		+ "FROM muncitor WHERE id_categorie="+categoryId+
+                		" AND id_oras="+cityId;
+                
+                result = statement.executeQuery(query);
+
+
+                if(result.next()){
+                	nr = result.getInt("count");
+                    }
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            finally{
+            	if (result != null) try { result.close(); } catch (SQLException e) {e.printStackTrace();}
+	            if (statement != null) try { statement.close(); } catch (SQLException e) {e.printStackTrace();}
+	            if (connection != null) try { connection.close(); } catch (SQLException e) {e.printStackTrace();}
+	         }
+            System.out.println("Rows: "+nr);
+
+    		
+    		return nr;
+    	}
+    
+    	private int getRowCount(String searchQuery){
+    		int nr = 0;
+    		
+    		Connection connection = null;
+	    	Statement statement = null;
+	    	ResultSet result = null;
+	    	
+	    	try {
+	    		connection = dataSource.getConnection();
+				statement = connection.createStatement();
+
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}	
+	    	
+            try {
+                String query = "SELECT COUNT(*) AS count "
+                		+ "FROM muncitor WHERE titlu LIKE '%"+searchQuery+"%'";
+                
+                result = statement.executeQuery(query);
+
+
+                if(result.next()){
+                	nr = result.getInt("count");
+                    }
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            finally{
+            	if (result != null) try { result.close(); } catch (SQLException e) {e.printStackTrace();}
+	            if (statement != null) try { statement.close(); } catch (SQLException e) {e.printStackTrace();}
+	            if (connection != null) try { connection.close(); } catch (SQLException e) {e.printStackTrace();}
+            
+            }
+            
+            System.out.println("Rows: "+nr);
+
+    		
+    		return nr;
+    	}
+
+    	private int getRowCount(int categoryId, String searchQuery){
+    		int nr = 0;
+    		
+    		Connection connection = null;
+	    	Statement statement = null;
+	    	ResultSet result = null;
+	    	
+	    	try {
+	    		connection = dataSource.getConnection();
+				statement = connection.createStatement();
+
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}	
+	    	
+            try {
+                String query = "SELECT COUNT(*) AS count "
+                		+ "FROM muncitor WHERE id_categorie="+categoryId+
+                		" AND titlu LIKE '%"+searchQuery+"%'";
+                
+                result = statement.executeQuery(query);
+
+
+                if(result.next()){
+                	nr = result.getInt("count");
+                    }
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            finally{
+            	if (result != null) try { result.close(); } catch (SQLException e) {e.printStackTrace();}
+	            if (statement != null) try { statement.close(); } catch (SQLException e) {e.printStackTrace();}
+	            if (connection != null) try { connection.close(); } catch (SQLException e) {e.printStackTrace();}
+            }
+            System.out.println("Rows: "+nr);
+
+    		
+    		return nr;
+    	}
+    	
+    	private int getRowCountC(int cityId, String searchQuery){
+    		int nr = 0;
+    		
+    		Connection connection = null;
+	    	Statement statement = null;
+	    	ResultSet result = null;
+	    	
+	    	try {
+	    		connection = dataSource.getConnection();
+				statement = connection.createStatement();
+
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}	
+	    	
+            try {
+                String query = "SELECT COUNT(*) AS count "
+                		+ "FROM muncitor WHERE id_oras="+cityId+" AND "
+                		+ "titlu LIKE '%"+searchQuery+"%'";
+                
+                result = statement.executeQuery(query);
+
+
+                if(result.next()){
+                	nr = result.getInt("count");
+                    }
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            finally{
+            	if (result != null) try { result.close(); } catch (SQLException e) {e.printStackTrace();}
+	            if (statement != null) try { statement.close(); } catch (SQLException e) {e.printStackTrace();}
+	            if (connection != null) try { connection.close(); } catch (SQLException e) {e.printStackTrace();}
+           
+            }
+            System.out.println("Rows: "+nr);
+
+    		
+    		return nr;
+    	}
+
+    	private int getRowCountC(int cityId){
+    		int nr = 0;
+    		
+    		Connection connection = null;
+	    	Statement statement = null;
+	    	ResultSet result = null;
+	    	
+	    	try {
+	    		connection = dataSource.getConnection();
+				statement = connection.createStatement();
+
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+	    	
+            try {
+                String query = "SELECT COUNT(*) AS count "
+                		+ "FROM muncitor WHERE id_oras="+cityId;
+                
+                result = statement.executeQuery(query);
+
+
+                if(result.next()){
+                	nr = result.getInt("count");
+                    }
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            finally{
+            	if (result != null) try { result.close(); } catch (SQLException e) {e.printStackTrace();}
+	            if (statement != null) try { statement.close(); } catch (SQLException e) {e.printStackTrace();}
+	            if (connection != null) try { connection.close(); } catch (SQLException e) {e.printStackTrace();}
+           }
+            System.out.println("Rows: "+nr);
+
+    		
+    		return nr;
+    	}
+    	
+    	private int getRowCount(int categoryId){
+    		int nr = 0;
+    		
+    		Connection connection = null;
+	    	Statement statement = null;
+	    	ResultSet result = null;
+	    	
+	    	try {
+	    		connection = dataSource.getConnection();
+				statement = connection.createStatement();
+
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}        	
+            try {
+                String query = "SELECT COUNT(*) AS count "
+                		+ "FROM muncitor WHERE id_categorie="+categoryId;
+                
+                result = statement.executeQuery(query);
+
+
+                if(result.next()){
+                	nr = result.getInt("count");
+                    }
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            finally{
+            	if (result != null) try { result.close(); } catch (SQLException e) {e.printStackTrace();}
+	            if (statement != null) try { statement.close(); } catch (SQLException e) {e.printStackTrace();}
+	            if (connection != null) try { connection.close(); } catch (SQLException e) {e.printStackTrace();}
+              }
+            System.out.println("Rows: "+nr);
+
+    		
+    		return nr;
+    	}
+    	
+    	private int getRowCount(){
+    		int nr = 0;
+    		
+    		Connection connection = null;
+	    	Statement statement = null;
+	    	ResultSet result = null;
+	    	
+	    	try {
+	    		connection = dataSource.getConnection();
+				statement = connection.createStatement();
+
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}        	
+            try {
+                String query = "SELECT COUNT(*) AS count "
+                		+ "FROM muncitor";
+                
+                result = statement.executeQuery(query);
+
+
+                if(result.next()){
+                	nr = result.getInt("count");
+                    }
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            finally{
+            	if (result != null) try { result.close(); } catch (SQLException e) {e.printStackTrace();}
+	            if (statement != null) try { statement.close(); } catch (SQLException e) {e.printStackTrace();}
+	            if (connection != null) try { connection.close(); } catch (SQLException e) {e.printStackTrace();}
+             }
+            System.out.println("Rows: "+nr);
+
+    		
+    		return nr;
+    	}
+
+  	  //-------------------------------------END ROW COUNT ----------------------------------
+
+    	
+    	public Profile getProfile(int id){
+    		
+    		Profile p = new Profile();
+    		
+    		createStatement();
+
+            try {
+                String query = "SELECT * from muncitor WHERE id_muncitor="+id;
+                res = st.executeQuery(query);
+
+                System.out.println(query);
+
+
+                if(res.next()){
+                	
+                	p.setId(res.getInt("id_muncitor"));
+                	p.setCityId(getCityName(res.getInt("id_oras")));
+                	p.setCategoryId(getCategoryName(res.getInt("id_categorie")));
+                	p.setName((res.getString("name")));
+                	p.setSurname(res.getString("prenume"));
+                	p.setTitle(res.getString("titlu"));
+                	p.setDescription(res.getString("descriere"));
+                	p.setTelephone(res.getString("telefon"));
+                	if(getImagePath(res.getInt("id_cont"))== null)
+                		p.setImgPath("./resources/img/default.png");
+                	else
+                		p.setImgPath(getImagePath(res.getInt("id_cont")));
+
+                    }
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            finally{
+    	    	   closeStatement();
+    	       }
+    		
+    		
+    		return p;
+    	}
+
+    	public ArrayList<SkillLvl> getProfileSkills(int id) {
+    		createStatement();
+	    	
+	        ArrayList<SkillLvl> skills = new ArrayList<SkillLvl>();
 	
-	        String query = "SELECT persoana.nume, persoana.telefon, persoana.id_categorie, persoana.titlu, persoana.descriere, persoana.rating, persoana.voturi, persoana.imagine, persoana.email, oras.nume_oras, regiune.nume_regiune, categorie.nume_categorie " +
-	                "FROM persoana " +
-	                "INNER JOIN oras ON persoana.id_oras=oras.id_oras " +
-	                "INNER JOIN regiune ON persoana.id_regiune=regiune.id_regiune " +
-	                "INNER JOIN categorie ON persoana.id_categorie = categorie.id_categorie " +
-	                "WHERE (persoana.id_regiune="+idRegion+" AND persoana.id_oras="+idCity+" AND titlu LIKE '%"+search+"%')";
 	        try {
+	            String query = "SELECT * FROM aptitudinimuncitor "
+	            		+ "WHERE id_muncitor="+id;
 	            res = st.executeQuery(query);
-	            while (res.next()){
-	                Person p = new Person();
 	
-	                p.setCity(res.getString("nume_oras"));
-	                p.setRegion(res.getString("nume_regiune"));
-	                p.setName(res.getString("nume"));
-	                p.setDescription(res.getString("descriere"));
-	                p.setPhoneNumber(res.getString("telefon"));
-	                p.setVoters(res.getInt("voturi"));
-	//                p.setPrice(res.getString("pret"));
-	//                p.setPayingMethod(res.getString("monetizare"));
-	                p.setCategory(res.getString("nume_categorie"));
 	
-	                arrayList.add(p);
-	            }
+	            while(res.next()){
+	                SkillLvl skill= new SkillLvl();
+	                
+	                skill.setName(getSkillName(res.getInt("id_aptitudine")));
+	                skill.setLevel(res.getInt("nivel"));
+	                
+	                skills.add(skill);
 	
-	        }catch (Exception e){
+	                }
+	
+	        } catch (Exception e) {
 	            e.printStackTrace();
 	        }
 	        finally{
 		    	   closeStatement();
 
 		       }
-	        
-	        return  arrayList;
-	    }
 	
-	    
+	        return skills;
+		}
+    	
+      //------------------------------------- ROW COUNT END ----------------------------------
+
+    
+    
 	    //use to get all cities from a region (providing region name)
-	    public ArrayList<CommonFields> getCity(int regiuneId) {
+ 	    public ArrayList<CommonFields> getCity(int regiuneId) {
 	    	createStatement();
 	    	
 	        ArrayList<CommonFields> listaOrase = new ArrayList<CommonFields>();
 	
 	        try {
 	            String query = "SELECT * FROM oras INNER JOIN regiune ON oras.id_regiune = regiune.id_regiune WHERE (regiune.id_regiune="+regiuneId+")";
+	            res = st.executeQuery(query);
+	
+	
+	            while(res.next()){
+	                City city = new City();
+	                city.setCityName(res.getString("nume_oras"));
+	                city.setCityId(res.getInt("id_oras"));
+	                listaOrase.add(city);
+	
+	                }
+	
+	        } catch (Exception e) {
+	            e.printStackTrace();
+	        }
+	        finally{
+		    	   closeStatement();
+
+		       }
+	
+	        return listaOrase;
+	    }
+	    
+	  //use to get all cities
+	    public ArrayList<CommonFields> getAllCities() {
+	    	createStatement();
+	    	
+	        ArrayList<CommonFields> listaOrase = new ArrayList<CommonFields>();
+	
+	        try {
+	            String query = "SELECT id_oras, nume_oras FROM oras ORDER BY nume_oras ASC";
 	            res = st.executeQuery(query);
 	
 	
@@ -609,6 +1473,63 @@ public class DBHandler {
         return succesfulLogin;
     }
 
+   
+    
+    public boolean deleteWorkerProfile(int workerId){
+    	
+    	createStatement();
+    	
+    	boolean success = true;
+    			
+		try {
+			String query = "DELETE FROM muncitor WHERE id_muncitor="+workerId;
+            st.executeUpdate(query);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            success=false;
+        }
+        finally{
+	    	   closeStatement();
+	       }
+		
+		System.out.println("worker profile deleted");
+		
+		return success;
+    }
+    
+    
+     @SuppressWarnings("null")
+	public Profile getWorkerProfile(int accountId){
+    	createStatement();
+    	
+		Profile profil = null;
+		
+		try {
+			String query = "SELECT * FROM muncitor WHERE id_cont="+accountId;
+            res = st.executeQuery(query);
+            if (res.next()) {
+                profil.setCategoryId(String.valueOf(res.getInt("id_categorie")));
+                profil.setCityId(String.valueOf(res.getInt("id_oras")));
+                profil.setDescription(res.getString("descriere"));
+                profil.setName(res.getString("name"));
+                profil.setSurname(res.getString("prenume"));
+                profil.setTelephone(res.getString("telefon"));
+                profil.setTitle(res.getString("titlu"));
+
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        finally{
+	    	   closeStatement();
+
+	       }
+		
+		return profil;
+	}
+    
     
     
     //Register new Account
@@ -653,15 +1574,52 @@ public class DBHandler {
     
     public String getImagePath(int id) {
     	
-    	createStatement();
+    	Connection connection = null;
+    	Statement statement = null;
+    	ResultSet result = null;
+    	
+    	try {
+    		connection = dataSource.getConnection();
+			statement = connection.createStatement();
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}	
     	
 		String path = null;
 		
 		try {
 			String query = "SELECT cale_imagine from imagini where id_cont="+id;
+			result = statement.executeQuery(query);
+            if (result.next()) {
+                path = result.getString("cale_imagine");
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        finally{
+        	if (result != null) try { result.close(); } catch (SQLException e) {e.printStackTrace();}
+            if (statement != null) try { statement.close(); } catch (SQLException e) {e.printStackTrace();}
+            if (connection != null) try { connection.close(); } catch (SQLException e) {e.printStackTrace();}
+			
+	       }
+		
+		
+		return path;
+	}
+
+    public int getWorkerCategory(int accountId){
+    	createStatement();
+    	
+    	int categoryId = 0;
+    	
+		try {
+			String query = "SELECT id_categorie FROM muncitor WHERE id_cont="+accountId;
             res = st.executeQuery(query);
             if (res.next()) {
-                path = res.getString("cale_imagine");
+                categoryId = res.getInt("id_categorie");
+
             }
 
         } catch (Exception e) {
@@ -672,75 +1630,35 @@ public class DBHandler {
 
 	       }
 		
-		
-		return path;
+		return categoryId;
 	}
-
-
-
     
-    //used to get one person profile (muncitor)
-    //for login purpose
-    //TODO modify
-    public Person getPerson(String email, String password){
+
+    //used to register new user profile
+    public boolean registerNewProfile(Profile profile, int id){
 
     	createStatement();
     	
-        Person p = new Person();
-
-        try{
-            String query = "SELECT persoana.nume, persoana.titlu, persoana.telefon, persoana.descriere, persoana.rating, persoana.voturi, persoana.imagine, persoana.email, regiune.nume_regiune, oras.nume_oras, categorie.nume_categorie " +
-                    "FROM persoana " +
-                    "JOIN oras ON persoana.id_oras = oras.id_oras " +
-                    "JOIN regiune ON persoana.id_regiune = regiune.id_regiune " +
-                    "JOIN categorie ON persoana.id_categorie = categorie.id_categorie " +
-                    "WHERE (email='"+email+"' AND password='"+password+"')";
-            res = st.executeQuery(query);
-            while (res.next()){
-                p.setName(res.getString("nume"));
-                p.setPhoneNumber(res.getString("telefon"));
-                p.setDescription(res.getString("descriere"));
-                p.setCity(res.getString("nume_oras"));
-                p.setRegion(res.getString("nume_regiune"));
-                p.setCategory(res.getString("nume_categorie"));
-                p.setEmai(res.getString("email"));
-            }
-
-        }catch (Exception e){
-            e.printStackTrace();
-        }
-        finally{
-	    	   closeStatement();
-
-	       }
-
-        return p;
-    }
-
-    //TODO modify
-    //used to register new user
-    public boolean registerNewPerson(Person p){
-
-    	createStatement();
+    	System.out.println("Register nw profile");
     	
         boolean register=true;
         int success=0;
-        String img = null;
-
-    /*    try {
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        */
-        int city = getCityId(p.getCity());
-        int region = getRegionId(p.getRegion());
-        int category = getCategoryId(p.getCategory());
-            String query = "INSERT INTO persoana (nume, id_oras, id_regiune, id_categorie, titlu, telefon, descriere, rating, voturi, imagine, email, password )" +
-                    " VALUES ('"+p.getName()+"',"+city+","+region+","+category+",'"+p.getTitle()+"','"+p.getPhoneNumber()+"', '"+p.getDescription()+"' , " +
-                    ","+p.getVoters()+", '"+img+"' , '"+p.getEmai()+"' , '"+ p.getPassword() +"')";
-
+        
+            String query = "INSERT INTO muncitor (id_categorie, id_oras, id_cont, titlu, telefon, descriere, name, prenume ) "
+            		+ "VALUES("+Integer.parseInt(profile.getCategoryId())+","+Integer.parseInt(profile.getCityId())+","
+            				+id+",'"+profile.getTitle()+"','"+profile.getTelephone()+"','"+profile.getDescription()+"',"
+            						+ "'"+profile.getName()+"','"+profile.getSurname()+"')";
+            
         try {
+        	
+        	System.out.println(query);
+
+        	
             success = st.executeUpdate(query);
+            insertIntoProfileSkills(getWorkerId(id), getSkillFromCat(Integer.parseInt(profile.getCategoryId())));
+            
+        	System.out.println("End ----- Register nw profile");
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -758,7 +1676,38 @@ public class DBHandler {
     }
 
     
-    //search for email
+    private void insertIntoProfileSkills(int id, ArrayList<CommonFields> skillFromCat) {
+    	
+    	for(CommonFields skills: skillFromCat){
+    		
+    		createStatement();
+    		
+        	System.out.println("Default skill level "+skills.getName());
+
+        	
+            String query = "INSERT INTO aptitudinimuncitor (id_aptitudine, id_muncitor, nivel)" +
+                    " VALUES("+skills.getId()+","+id+","+1+")";
+    	    try {
+    	    	
+            	System.out.println(query);
+
+    	    	
+    	        st.executeUpdate(query);
+            	System.out.println("End ----- Default skill level "+skills.getName());
+
+    	    } catch (SQLException e) {
+    	        e.printStackTrace();
+    	    }
+    	    finally{
+    	    	   closeStatement();
+    	    }
+
+    	}
+    	
+    	
+	}
+
+	//search for email
     //used for login
     public boolean searchForEmail(String email){
 
@@ -789,7 +1738,107 @@ public class DBHandler {
     }
 
    
-    //TODO comments
+    //------------------Comments--------------------------------
+    public ArrayList<Comment> getComment(int id_profile){
+    	
+    	createStatement();
+    	
+        ArrayList<Comment> comments = new ArrayList<Comment>();
+
+        try {
+            String query = "SELECT * FROM comentarii INNER JOIN cont ON(comentarii.id_cont = cont.id_cont)"
+            		+ " WHERE "
+            		+ "id_muncitor="+id_profile+" LIMIT 0,5";
+            res = st.executeQuery(query);
+
+            System.out.println(query);
+
+            while(res.next()){
+                Comment comment = new Comment();
+                comment.setId_muncitor(res.getInt("id_muncitor"));
+                comment.setRating(res.getInt("rating"));
+                comment.setDate(res.getString("data_comentariu"));
+                comment.setText(res.getString("text_comentariu"));
+                
+                comment.setAccount_name(res.getString("email"));
+                
+                if(getImagePath(res.getInt("id_cont"))== null)
+            		comment.setAccount_img("./resources/img/default.png");
+            	else
+            		comment.setAccount_img(getImagePath(res.getInt("id_cont")));
+
+                
+                comments.add(comment);
+
+                }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        finally{
+	    	   closeStatement();
+
+	       }
+        return comments;
+    }
+
+    public ArrayList<Comment> getAllComments(int id_profile){
+    	
+    	createStatement();
+    	
+        ArrayList<Comment> comments = new ArrayList<Comment>();
+
+        try {
+            String query = "SELECT * FROM comentarii INNER JOIN cont ON(comentarii.id_cont = cont.id_cont)"
+            		+ " WHERE "
+            		+ "id_muncitor="+id_profile;
+            res = st.executeQuery(query);
+
+            System.out.println(query);
+
+            while(res.next()){
+                Comment comment = new Comment();
+                comment.setId_muncitor(res.getInt("id_muncitor"));
+                comment.setRating(res.getInt("rating"));
+                comment.setDate(res.getString("data_comentariu"));
+                comment.setText(res.getString("text_comentariu"));
+                
+                comment.setAccount_name(res.getString("email"));
+                
+                if(getImagePath(res.getInt("id_cont"))== null)
+            		comment.setAccount_img("./resources/img/default.png");
+            	else
+            		comment.setAccount_img(getImagePath(res.getInt("id_cont")));
+
+                
+                comments.add(comment);
+
+                }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        finally{
+	    	   closeStatement();
+
+	       }
+        return comments;
+    }
+    
+    public void addComment(int id, int profile_id, int notaN, String text) {
+    	createStatement();
+    	
+    	String query = "INSERT INTO comentarii(id_cont, id_muncitor, rating, text_comentariu,"
+    			+ " data_comentariu) VALUES("+id+","+profile_id+","+notaN+",'"+text+"','"+Date.currentDate()+"')";
+    	
+    	try {
+    		st.executeUpdate(query);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    
+    }
+    
     
     /**
      * ------------- FOR USER SETTINGS ----------------------//
@@ -864,7 +1913,44 @@ public class DBHandler {
 		  
 	  }
 	 
-	    /**
+	  public boolean updateProfileSkills(int nivel, int skillId, int profileId){
+		  
+		  createStatement();
+	    	
+	    	System.out.println("Register nw profile");
+	    	
+	        boolean update=true;
+	        int success=0;
+	        
+	            String query = "UPDATE aptitudinimuncitor SET nivel ="+nivel+" WHERE "
+	            		+ "id_aptitudine = "+skillId+" and id_muncitor = "+profileId;
+	            
+	        try {
+	        	
+	        	System.out.println(query);
+	        	
+	            success = st.executeUpdate(query);
+	            
+
+	        } catch (SQLException e) {
+	            e.printStackTrace();
+	        }
+	        finally{
+		    	   closeStatement();
+
+		       }
+
+	        if(success == 0){
+	        	update=false;
+	            }
+
+
+	        return update;
+		  
+	  } 
+
+	  
+	  /**
 	     * ------------- END USER SETTINGS ----------------------// 
 	     * 
 	     */
@@ -1125,7 +2211,6 @@ public class DBHandler {
 	//=========================== Pooling =======================
 		private void closeStatement(){
 			
-			if (res != null) try { res.close(); } catch (SQLException e) {e.printStackTrace();}
             if (st != null) try { st.close(); } catch (SQLException e) {e.printStackTrace();}
             if (con != null) try { con.close(); } catch (SQLException e) {e.printStackTrace();}
 			
@@ -1137,13 +2222,16 @@ public class DBHandler {
 				st = con.createStatement();
 
 			} catch (SQLException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
             
 	       
 	       
 		}
+
+		
+
+		
 
 	
 		

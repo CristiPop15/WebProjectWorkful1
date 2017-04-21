@@ -7,11 +7,14 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.workful.handler.DBHandler;
 import com.workful.templates.CommonFields;
+import com.workful.templates.CurrentPerson;
+import com.workful.templates.Profile;
 
 
 @Controller
@@ -20,39 +23,24 @@ public class UserController {
 	
 	private DBHandler db = DBHandler.getInstance();
 	
+	private String email;
+	private String imgPath;
+	private int id;
+	private CurrentPerson current;
+	
+	
 	Authentication auth;
 	
-	@RequestMapping("/enrole")
-	public String enroleAsWorker(){
-		return "user/enrole";
-	}
-	
-	@RequestMapping("/search")
-	public String search(@RequestParam(value="category", required=false, defaultValue="category")String category,
-			@RequestParam(value="region", required=false, defaultValue="region")String region,
-			ModelMap model){
 		
-
-		model.addAttribute("region", region);
-		model.addAttribute("category", category);
-		return "search";
-	}
-	
 	@RequestMapping("/index")
-	public String index(ModelMap model, @RequestParam(value = "show", required=false, defaultValue="not")String show){
+	public String index(ModelMap model){
 		
 		auth = SecurityContextHolder.getContext().getAuthentication();
-		
-		//if user calls for filters
-			if(!show.equals("not")){
-				
-				model.addAttribute("showFilters", "show");
-				
-			}		
+			
 			
 			//set regions for filter in index(modal) 
-			ArrayList<CommonFields> modelFilterRegions = db.getRegion();
-			model.addAttribute("region", modelFilterRegions);
+			ArrayList<CommonFields> modelFilterCities = db.getAllCities();
+			model.addAttribute("city", modelFilterCities);
 			
 			//set categories for filter in index(modal) 
 			ArrayList<CommonFields> modelFilterCategory = db.getCategory();
@@ -86,6 +74,21 @@ public class UserController {
 		return "index/index";
 	}
 
-	
+	private CurrentPerson getPerson(){
+		try{
+			email = SecurityContextHolder.getContext().getAuthentication().getName();
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+		
+		id = db.getPersonId(email);
+		imgPath = db.getImagePath(id);
+		
+		if(imgPath == null)
+			imgPath = "../resources/img/default.png";
+		
+		return new CurrentPerson(id,email,imgPath);
+		
+	}
 	
 }

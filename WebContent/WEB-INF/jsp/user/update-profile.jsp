@@ -1,5 +1,6 @@
 <%@page contentType="text/html; charset=UTF-8"%>
 <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>   
 
 
 
@@ -15,6 +16,7 @@
 
 	<title>Workful</title> 
 	<link href="${pageContext.request.contextPath}/resources/css/form.css" rel="stylesheet">   
+	<link href="${pageContext.request.contextPath}/resources/css/modal-delete-account.css" rel="stylesheet">      
 	   
 	
 	<!-- All the files that are required -->
@@ -26,7 +28,7 @@
 <body>
 
 <div class="text-center" style="text-align:center;">
-	<div class="logo"><h1 style="color:black"><strong>SETTINGS</strong></h1></div>
+	<div class="logo"><h1 style="color:black"><strong> UPDATE PROFILE</strong></h1></div>
 </div>
 
 <!-- Error/Successful -->
@@ -41,42 +43,7 @@
 	</div>
 </div>
 
-<!--  ======================== PASSWORD UPDATE FORM ========================================== -->
 
-<div class="text-center" style="text-align:center;">
-	<div class="logo">password update</div>
-	
-	<!-- Main Form -->
-	<div class="form-1">
-	
-		<form class="text-left" action="passwordc" method="post">		
-			<div class="main-form">	
-			  <button type="reset" class="filter"><i class="fa fa-repeat"></i></button>
-								
-				<div class="group">
-				
-					<div class="form-group">
-						<label>New Password</label>
-						<input type="password" required class="form-control" name="new">
-					</div>
-					<div class="form-group">
-						<label>Confirm New Password</label>
-						<input type="password" required class="form-control" name="confirm">
-					</div>
-					<input type="hidden"
-					 name="${_csrf.parameterName}" 
-					 value="${_csrf.token}"/>
-					
-				</div>
-				<button type="submit" class="button"><i class="fa fa-chevron-right"></i></button>
-			</div>
-		</form>
-		
-	</div>
-	<!-- end:Password Update Form -->
-</div>
-
-<br>
 
 <!-- ========================================== Image change ================================= -->
 
@@ -87,7 +54,8 @@
 		
 		<form action="./update-image?${_csrf.parameterName}=${_csrf.token}" method="post" enctype="multipart/form-data">
 			<div class="main-form">
-
+			
+				<label>changing the picture will automatically change your account picture</label>
 				
 				<input type="file" name="image">
 				
@@ -101,51 +69,41 @@
 
 <br>
 
-	<div class="container">
-
-
 <!-- ========================================== Modal content ================================= -->
 
-		<!-- Modal -->
-		  <div class="modal fade" id="myModal" role="dialog">
-		    <div class="modal-dialog">
-		    <form action="delete-account">
-		    
-		    
-		      <!-- Modal content-->
-		      <div class="modal-content">
-		        <div class="modal-header">
-		          <button type="button" class="close" data-dismiss="modal">&times;</button>
-				  <label>Delete account?</label>
-		        </div>
+<c:if test="${not empty popup}">
+
+	<form action="delete-profile">
+		<div class="modal-content">
+		  <div class="modal-header">
+			<div class="logo">Delete account?</div>
+	  	  </div>
 	 
 	   
 	   	  <div class="modal-body">
+	   	    	<button formaction="<c:url value="update-profile"/>" class="close"><i class="fa fa-times"></i></button>
 	   	  
-	    		<button type="submit" value="Yes">Yes</button>
+	    		<button type="submit" class="yes"><i class="fa fa-chevron-right"></i></button>
 		 </div>
 		</div>
 		
-		</form>
-		
-		</div>
-		
-		
-	</div>
+	</form>
+</c:if>
 
-<!--  ======================== DELETE ACCOUNT ========================================== -->
+<!--  ======================== DELETE PROFILE ========================================== -->
 
 <div class="text-center" style="text-align:center;">
-	<div class="logo">delete account?</div>
+	<div class="logo">delete profile?</div>
 	<!-- Main Form -->
 	<div class="form-1">
+		<form class="text-left" action="update-profile">		
 			<div class="main-form">
-				<button type="submit" class="delete-button" data-toggle="modal" data-target="#myModal"><i class="fa fa-times"></i></button>
+				<input type="hidden" value="popup" name="popup">
+				<button type="submit" class="delete-button"><i class="fa fa-times"></i></button>
 			</div>
+		</form>
 		
 	</div>
-	<!-- end:Password Update Form -->
-</div>
 </div>
 
 
