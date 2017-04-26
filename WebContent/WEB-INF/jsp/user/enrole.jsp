@@ -118,30 +118,6 @@
 
 <br>
 
-<!-- ========================================== Image change ================================= -->
-
-<div class="text-center" style="text-align:center;">
-	<div class="logo">Change Picture</div>
-	<!-- Main Form -->
-	<div class="form-1">
-		
-		<form action="./update-image?${_csrf.parameterName}=${_csrf.token}" method="post" enctype="multipart/form-data">
-			<div class="main-form">
-			
-				<label>changing the picture will automatically change your account picture</label>
-				
-				<input type="file" name="image">
-				
-				<button type="submit" class="button"><i class="fa fa-chevron-right"></i></button>
-			</div>
-		</form>
-		
-	</div>
-</div>
-
-
-<br>
-
 
 </body>
 </html>

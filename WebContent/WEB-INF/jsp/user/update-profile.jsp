@@ -16,7 +16,6 @@
 
 	<title>Workful</title> 
 	<link href="${pageContext.request.contextPath}/resources/css/form.css" rel="stylesheet">   
-	<link href="${pageContext.request.contextPath}/resources/css/modal-delete-account.css" rel="stylesheet">      
 	   
 	
 	<!-- All the files that are required -->
@@ -68,42 +67,50 @@
 
 
 <br>
+	<div class="container">
 
 <!-- ========================================== Modal content ================================= -->
 
-<c:if test="${not empty popup}">
-
-	<form action="delete-profile">
-		<div class="modal-content">
-		  <div class="modal-header">
-			<div class="logo">Delete account?</div>
-	  	  </div>
+		<!-- Modal -->
+		  <div class="modal fade" id="myModal" role="dialog">
+		    <div class="modal-dialog">
+		    <form action="delete-profile">
+		    
+		    
+		      <!-- Modal content-->
+		      <div class="modal-content">
+		        <div class="modal-header">
+		          <button type="button" class="close" data-dismiss="modal">&times;</button>
+				  <label>Delete profile?</label>
+		        </div>
 	 
 	   
 	   	  <div class="modal-body">
-	   	    	<button formaction="<c:url value="update-profile"/>" class="close"><i class="fa fa-times"></i></button>
 	   	  
-	    		<button type="submit" class="yes"><i class="fa fa-chevron-right"></i></button>
+	    		<button type="submit" value="Yes">Yes</button>
 		 </div>
 		</div>
 		
-	</form>
-</c:if>
+		</form>
+		
+		</div>
+		
+		
+	</div>
 
-<!--  ======================== DELETE PROFILE ========================================== -->
+<!--  ======================== DELETE ACCOUNT ========================================== -->
 
 <div class="text-center" style="text-align:center;">
 	<div class="logo">delete profile?</div>
 	<!-- Main Form -->
 	<div class="form-1">
-		<form class="text-left" action="update-profile">		
 			<div class="main-form">
-				<input type="hidden" value="popup" name="popup">
-				<button type="submit" class="delete-button"><i class="fa fa-times"></i></button>
+				<button type="submit" class="delete-button" data-toggle="modal" data-target="#myModal"><i class="fa fa-times"></i></button>
 			</div>
-		</form>
 		
 	</div>
+	<!-- end:Password Update Form -->
+</div>
 </div>
 
 

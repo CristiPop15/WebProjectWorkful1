@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import com.workful.handler.DBHandler;
 import com.workful.templates.Comment;
+import com.workful.templates.CommonFields;
 import com.workful.templates.CurrentPerson;
 import com.workful.templates.Profile;
 import com.workful.templates.SearchObj;
@@ -58,6 +59,7 @@ public class SearchController {
 			@RequestParam(value = "category", required=false, defaultValue="0")String category, 
 			@RequestParam(value = "query", required=false, defaultValue="query")String searchQuery,
 			@RequestParam(value = "limit", required=false, defaultValue="1")String lim){
+		
 		
 		current = getPerson();
 		
@@ -132,6 +134,14 @@ public class SearchController {
 			System.out.println("No info");
 		}			
 		
+		//set regions for filter in index(modal) 
+		ArrayList<CommonFields> modelFilterCities = db.getAllCities();
+		model.addAttribute("city", modelFilterCities);
+		
+		//set categories for filter in index(modal) 
+		ArrayList<CommonFields> modelFilterCategory = db.getCategory();
+		model.addAttribute("category", modelFilterCategory);
+		
 		//if no results are found
 		if(result.getRows() == 0)
 			model.addAttribute("msg", "No results found");
@@ -144,7 +154,7 @@ public class SearchController {
 		
 	}
 
-
+	//TODO
 	@SuppressWarnings("unused")
 	private List<Integer> getPagination(int limit, int rows) {
 		List<Integer> row = new ArrayList<>();

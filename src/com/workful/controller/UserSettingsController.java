@@ -47,7 +47,7 @@ public class UserSettingsController {
 	
 	//for redirecting
 	private final String userSettings = "user/";
-	private final String userRedirect = "redirect:/";
+	private final String userRedirect = "redirect:/user/";
 
 	
 	
@@ -179,6 +179,7 @@ public class UserSettingsController {
 		current = getPerson();
 		
 		if(db.deleteUser(current.getEmail())){
+			ImageHandler.deleteImage(current.getEmail());
 			return SUCCESS+USER_DELETED;
 		}
 		return ERROR+SOME_ERROR;

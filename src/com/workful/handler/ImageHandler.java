@@ -52,5 +52,10 @@ public class ImageHandler {
     }
 
 
+    public static void deleteImage(String email){
+        File pathToImage = new File("E:/ImgApp/"+email+".png"); //folder name and img name
+        
+        pathToImage.delete();
+    }
 }
 
