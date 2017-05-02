@@ -139,7 +139,7 @@ public class SearchController {
 		model.addAttribute("city", modelFilterCities);
 		
 		//set categories for filter in index(modal) 
-		ArrayList<CommonFields> modelFilterCategory = db.getCategory();
+		ArrayList<Object> modelFilterCategory = db.getCategory();
 		model.addAttribute("category", modelFilterCategory);
 		
 		//if no results are found

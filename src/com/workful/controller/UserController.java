@@ -7,14 +7,11 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import com.workful.handler.DBHandler;
 import com.workful.templates.CommonFields;
 import com.workful.templates.CurrentPerson;
-import com.workful.templates.Profile;
 
 
 @Controller
@@ -26,7 +23,6 @@ public class UserController {
 	private String email;
 	private String imgPath;
 	private int id;
-	private CurrentPerson current;
 	
 	
 	Authentication auth;
@@ -43,7 +39,7 @@ public class UserController {
 			model.addAttribute("city", modelFilterCities);
 			
 			//set categories for filter in index(modal) 
-			ArrayList<CommonFields> modelFilterCategory = db.getCategory();
+			ArrayList<Object> modelFilterCategory = db.getCategory();
 			model.addAttribute("category", modelFilterCategory);
 	
 		//if there is no user logged in return normal index

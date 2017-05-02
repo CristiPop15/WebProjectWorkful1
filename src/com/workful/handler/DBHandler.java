@@ -13,8 +13,10 @@ import com.workful.templates.Category;
 import com.workful.templates.City;
 import com.workful.templates.Comment;
 import com.workful.templates.CommonFields;
+import com.workful.templates.ListObject;
 import com.workful.templates.Profile;
 import com.workful.templates.Region;
+import com.workful.templates.RestAccountInfo;
 import com.workful.templates.SearchObj;
 import com.workful.templates.SearchResult;
 import com.workful.templates.Skill;
@@ -69,7 +71,7 @@ public class DBHandler {
 	     * 
 	     */
 	  
-	    private int getAccountId(String email){
+	    public int getAccountId(String email){
 	    	Connection connection = null;
 	    	Statement statement = null;
 	    	ResultSet result = null;
@@ -1254,10 +1256,10 @@ public class DBHandler {
     
     
 	    //use to get all cities from a region (providing region name)
- 	    public ArrayList<CommonFields> getCity(int regiuneId) {
+ 	    public ArrayList<Object> getCity(int regiuneId) {
 	    	createStatement();
 	    	
-	        ArrayList<CommonFields> listaOrase = new ArrayList<CommonFields>();
+	        ArrayList<Object> listaOrase = new ArrayList<Object>();
 	
 	        try {
 	            String query = "SELECT * FROM oras INNER JOIN regiune ON oras.id_regiune = regiune.id_regiune WHERE (regiune.id_regiune="+regiuneId+")";
@@ -1315,11 +1317,11 @@ public class DBHandler {
 	
 	    
 	    //use to get a list with all the regions
-	    public ArrayList<CommonFields> getRegion() {
+	    public ArrayList<Object> getRegion() {
 
 	    	createStatement();
 	    	
-	        ArrayList<CommonFields>listaRegiuni = new ArrayList<CommonFields>();
+	        ArrayList<Object>listaRegiuni = new ArrayList<Object>();
 	
 	        try {
 	            String query = "SELECT * FROM regiune ORDER BY nume_regiune ASC";
@@ -1345,11 +1347,11 @@ public class DBHandler {
 	    }
 	    
 	    //used to get category list
-	    public ArrayList<CommonFields> getCategory(){
+	    public ArrayList<Object> getCategory(){
 
 	    	createStatement();
 	    	
-	        ArrayList<CommonFields> list = new ArrayList<CommonFields>();
+	        ArrayList<Object> list = new ArrayList<Object>();
 	        
 	        String query = "SELECT * FROM categorie";
 	        try {
@@ -1373,11 +1375,11 @@ public class DBHandler {
 	    }
 	    
 	    //used to get skills from category providing category id
-		public ArrayList<CommonFields> getSkillFromCat(int cat) {
+		public ArrayList<Object> getSkillFromCat(int cat) {
 
 			createStatement();
 			
-	        ArrayList<CommonFields>skillList = new ArrayList<CommonFields>();
+	        ArrayList<Object>skillList = new ArrayList<Object>();
 
 	        try {
 	            String query = "SELECT aptitudini.nume_aptitudine, aptitudini.id_aptitudine"
@@ -1410,11 +1412,11 @@ public class DBHandler {
 		
 		 //used for skills(aptitudini)
 	    //need to provide category name
-	    public ArrayList<CommonFields> getSkills(){
+	    public ArrayList<Object> getSkills(){
 
 	    	createStatement();
 
-	    	ArrayList<CommonFields> skills = new ArrayList<CommonFields>();
+	    	ArrayList<Object> skills = new ArrayList<Object>();
 	    
 	    	String query = "SELECT * FROM aptitudini";
 	    			
@@ -1450,14 +1452,14 @@ public class DBHandler {
     
     //login
     //TODO modify
-    boolean login(String email, String password){
+    public boolean login(String email, String password){
 
     	createStatement();
     	
         boolean succesfulLogin = false;
 
         try {
-            String query = "SELECT * FROM persoana WHERE email='"+email+"' AND password='"+password+"')";
+            String query = "SELECT * FROM cont WHERE email='"+email+"' AND parola='"+password+"'";
             res = st.executeQuery(query);
             if (res.next()) {
                 succesfulLogin = true;
@@ -1473,7 +1475,29 @@ public class DBHandler {
         return succesfulLogin;
     }
 
-   
+   public String getPassword(String email){
+	   
+	   createStatement();
+	   String password = null;
+   	
+       try {
+           String query = "SELECT parola FROM cont WHERE email='"+email+"'";
+           res = st.executeQuery(query);
+           if (res.next()) {
+               password = res.getString("parola");
+           }
+
+       } catch (Exception e) {
+           e.printStackTrace();
+       }
+       finally{
+	    	   closeStatement();
+
+	       }
+       
+       System.out.println("Password "+password);
+       return password;
+   }
     
     public boolean deleteWorkerProfile(int workerId){
     	
@@ -1530,7 +1554,32 @@ public class DBHandler {
 		return profil;
 	}
     
-    
+    public RestAccountInfo getAccountInfo(int id_account){
+    	 createStatement();
+  	   RestAccountInfo account = new RestAccountInfo();
+     	
+         try {
+             String query = "SELECT * FROM cont WHERE id_cont="+id_account;
+             res = st.executeQuery(query);
+             if (res.next()) {
+                 account.setEmail(res.getString("email"));
+                 account.setId(id_account);
+             }
+
+         } catch (Exception e) {
+             e.printStackTrace();
+         }
+         finally{
+  	    	   closeStatement();
+
+  	       }
+         
+         account.setFull_name(getFullName(account.getId()));
+         
+         
+         System.out.println("Account info: "+account.toString());
+         return account;
+    }
     
     //Register new Account
     public boolean registerNewAccount(Account account){
@@ -1633,7 +1682,31 @@ public class DBHandler {
 		return categoryId;
 	}
     
+    public String getFullName(int accountId){
+    	
+    	int profile_id = getWorkerId(accountId);
+    	String full_name = null;
+    	
+    	createStatement();
+    	
+    	try {
+            String query = "SELECT * FROM muncitor WHERE id_muncitor="+profile_id;
+            res = st.executeQuery(query);
+            if (res.next()) {
+                full_name = res.getString("nume")+" "+res.getString("prenume");
+            }
 
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        finally{
+ 	    	   closeStatement();
+
+ 	       }
+    	
+    	return full_name;
+    }
+    
     //used to register new user profile
     public boolean registerNewProfile(Profile profile, int id){
 
@@ -1676,24 +1749,24 @@ public class DBHandler {
     }
 
     
-    private void insertIntoProfileSkills(int id, ArrayList<CommonFields> skillFromCat) {
+    private void insertIntoProfileSkills(int id, ArrayList<Object> arrayList) {
     	
-    	for(CommonFields skills: skillFromCat){
+    	for(Object skills: arrayList){
     		
     		createStatement();
     		
-        	System.out.println("Default skill level "+skills.getName());
+        	System.out.println("Default skill level "+((Skill) skills).getName());
 
         	
             String query = "INSERT INTO aptitudinimuncitor (id_aptitudine, id_muncitor, nivel)" +
-                    " VALUES("+skills.getId()+","+id+","+1+")";
+                    " VALUES("+((Skill) skills).getId()+","+id+","+1+")";
     	    try {
     	    	
             	System.out.println(query);
 
     	    	
     	        st.executeUpdate(query);
-            	System.out.println("End ----- Default skill level "+skills.getName());
+            	System.out.println("End ----- Default skill level "+((Skill) skills).getName());
 
     	    } catch (SQLException e) {
     	        e.printStackTrace();

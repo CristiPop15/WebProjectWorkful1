@@ -43,7 +43,7 @@ public class AdminController {
 
 
 	DBHandler db = DBHandler.getInstance();
-	private ArrayList<CommonFields> list = new ArrayList<CommonFields>();
+	private ArrayList<Object> list = new ArrayList<Object>();
 
 	
 	/**
@@ -60,7 +60,7 @@ public class AdminController {
 		public ModelAndView controlPanel(@RequestParam("type") String choiceType, 
 			@RequestParam("choice") String choice){
 		
-		ArrayList<CommonFields> list = getList(choice);
+		ArrayList<Object> list = getList(choice);
 		ModelAndView model = null;
 		
 		if(!choice.equals(CITY)){
@@ -120,7 +120,7 @@ public class AdminController {
 
 	@RequestMapping("delete/oras")
 		public ModelAndView removeCity(@RequestParam("item") String toBeDeleted){
-		ArrayList<CommonFields> list = db.getCity(Integer.parseInt(toBeDeleted));
+		ArrayList<Object> list = db.getCity(Integer.parseInt(toBeDeleted));
 		ModelAndView model = new ModelAndView("admin/removeCityFromRegion");
 		model.addObject("list", list);
 		model.addObject("regionName", db.getRegionName(Integer.parseInt(toBeDeleted)));
@@ -169,7 +169,7 @@ public class AdminController {
 		
 	@RequestMapping("intermediateSelection")
 		public ModelAndView categorySelectionForSkill(@RequestParam("type") String type){
-			ArrayList<CommonFields>list = getList(CATEGORY);
+			ArrayList<Object>list = getList(CATEGORY);
 			ModelAndView model = new ModelAndView("admin/intermediateSelection");
 			model.addObject("type",type);
 			model.addObject("choice", "skillToCategory");
@@ -203,7 +203,7 @@ public class AdminController {
 		public ModelAndView deleteSkillFromCategoryModel(@RequestParam(value="success", required=false, defaultValue="firstTime") String success,
 			@RequestParam("item") String categoryChoice){
 			
-		ArrayList<CommonFields> list = db.getSkillFromCat(Integer.parseInt(categoryChoice));
+		ArrayList<Object> list = db.getSkillFromCat(Integer.parseInt(categoryChoice));
 			
 		ModelAndView model = new ModelAndView("admin/deleteSkillsFromCategory");
 		model.addObject("skills", list);
@@ -236,7 +236,7 @@ public class AdminController {
 		}
 		
 		
-		private ArrayList<CommonFields> getList(String choice){
+		private ArrayList<Object> getList(String choice){
 			list.clear();
 			
 			if(choice.equals(REGION)){

@@ -290,7 +290,7 @@ public class UserSettingsController {
 		
 		model.addAttribute("path", current.getImgPath());
 		
-		ArrayList<CommonFields> skills = db.getSkillFromCat(db.getWorkerCategory(current.getId()));
+		ArrayList<Object> skills = db.getSkillFromCat(db.getWorkerCategory(current.getId()));
 		
 		model.addAttribute("skills", skills);
 		
@@ -305,12 +305,12 @@ public class UserSettingsController {
 		int profileId = db.getWorkerId(current.getId());
 		
 		
-		ArrayList<CommonFields> skills = db.getSkillFromCat(db.getWorkerCategory(current.getId()));
+		ArrayList<Object> skills = db.getSkillFromCat(db.getWorkerCategory(current.getId()));
 
-		for(CommonFields skill: skills){
-			System.out.println(params.get(skill.getId()));
-			db.updateProfileSkills(Integer.parseInt(params.get(String.valueOf(skill.getId()))), 
-					skill.getId(), profileId);
+		for(Object skill: skills){
+			System.out.println(params.get(((CommonFields) skill).getId()));
+			db.updateProfileSkills(Integer.parseInt(params.get(String.valueOf(((CommonFields) skill).getId()))), 
+					((CommonFields) skill).getId(), profileId);
 		}
 		
 		return "redirect:/index";

@@ -51,9 +51,9 @@ public class TestController {
 		current = getPerson();
 		
 		
-		ArrayList<CommonFields> skills = db.getSkillFromCat(db.getWorkerCategory(current.getId()));
+		//ArrayList<CommonFields> skills = db.getSkillFromCat(db.getWorkerCategory(current.getId()));
 		
-		model.addAttribute("skills", skills);
+		//model.addAttribute("skills", skills);
 		
 		return model;
 		
@@ -69,12 +69,13 @@ public class TestController {
 		System.out.println(params.toString());
 		System.out.println(current.getId());
 		System.out.println(params.get(String.valueOf(8)));
-		ArrayList<CommonFields> skills = db.getSkillFromCat(db.getWorkerCategory(current.getId()));
-
+	//	ArrayList<CommonFields> skills = db.getSkillFromCat(db.getWorkerCategory(current.getId()));
+/*
 		for(CommonFields skill: skills){
 			System.out.println(params.get(skill.getId()));
 			db.updateProfileSkills(Integer.parseInt(params.get(String.valueOf(skill.getId()))), 
 					skill.getId(), profileId);
+		*/
 		}
 	}
 	
@@ -132,4 +133,4 @@ public class TestController {
 		return "hello";
 	}
 	*/
-}
+
