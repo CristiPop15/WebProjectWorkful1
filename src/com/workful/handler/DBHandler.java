@@ -432,6 +432,39 @@ public class DBHandler {
         return cityName;
     }
     
+    private String getEmail(int id_cont){
+    	Connection connection = null;
+    	Statement statement = null;
+    	ResultSet result = null;
+    	
+    	try {
+    		connection = dataSource.getConnection();
+			statement = connection.createStatement();
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}	    	
+    	String account_email = null;
+        String query = "SELECT email FROM cont WHERE id_cont="+id_cont;
+       try {
+    	   result = statement.executeQuery(query);
+           if(result.next()) {
+        	   account_email = result.getString("email");
+           }
+       }
+       catch (Exception e){
+           e.printStackTrace();
+       }finally{
+    	   if (result != null) try { result.close(); } catch (SQLException e) {e.printStackTrace();}
+            if (statement != null) try { statement.close(); } catch (SQLException e) {e.printStackTrace();}
+            if (connection != null) try { connection.close(); } catch (SQLException e) {e.printStackTrace();}
+			
+       }
+       
+       System.out.println(account_email);
+       
+        return account_email;
+    }
     
     
     /**
@@ -461,8 +494,8 @@ public class DBHandler {
         try {
             String query = "SELECT id_cont, id_muncitor, id_categorie, id_oras, name, prenume, titlu "
             		+ "FROM muncitor WHERE id_categorie="+categoryId+
-            		"AND id_oras="+cityId+" AND "
-            		+ "titlu LIKE '%"+searchQuery+"%' LIMIT "+(limit-1)+",10";
+            		" AND id_oras="+cityId+" AND "
+            		+ "titlu LIKE '%"+searchQuery+"%' LIMIT "+limit*10+",10";
             res = st.executeQuery(query);
 
             System.out.println(query);
@@ -477,6 +510,7 @@ public class DBHandler {
             	searchResult.setName((res.getString("name")));
             	searchResult.setSurname(res.getString("prenume"));
             	searchResult.setTitle(res.getString("titlu"));
+            	searchResult.setEmail(getEmail(res.getInt("id_cont")));
             	if(getImagePath(res.getInt("id_cont"))== null)
             		searchResult.setImgPath("./resources/img/default.png");
             	else
@@ -510,7 +544,7 @@ public class DBHandler {
         try {
             String query = "SELECT id_cont, id_muncitor, id_categorie, id_oras, name, prenume, titlu "
             		+ "FROM muncitor WHERE id_categorie="+categoryId+
-            		" AND id_oras="+cityId+" LIMIT "+(limit-1)+",10";
+            		" AND id_oras="+cityId+" LIMIT "+limit*10+",10";
             
             res = st.executeQuery(query);
             
@@ -525,6 +559,7 @@ public class DBHandler {
             	searchResult.setName((res.getString("name")));
             	searchResult.setSurname(res.getString("prenume"));
             	searchResult.setTitle(res.getString("titlu"));
+            	searchResult.setEmail(getEmail(res.getInt("id_cont")));
             	if(getImagePath(res.getInt("id_cont"))== null)
             		searchResult.setImgPath("./resources/img/default.png");
             	else
@@ -556,7 +591,7 @@ public class DBHandler {
 
         try {
             String query = "SELECT id_cont, id_muncitor, id_categorie, id_oras, name, prenume, titlu "
-            		+ "FROM muncitor WHERE titlu LIKE '%"+searchQuery+"%' LIMIT "+(limit-1)+",10";
+            		+ "FROM muncitor WHERE titlu LIKE '%"+searchQuery+"%' LIMIT "+limit*10+",10";
             res = st.executeQuery(query);
 
             System.out.println(query);
@@ -571,6 +606,7 @@ public class DBHandler {
             	searchResult.setName((res.getString("name")));
             	searchResult.setSurname(res.getString("prenume"));
             	searchResult.setTitle(res.getString("titlu"));
+            	searchResult.setEmail(getEmail(res.getInt("id_cont")));
             	if(getImagePath(res.getInt("id_cont"))== null)
             		searchResult.setImgPath("./resources/img/default.png");
             	else
@@ -589,6 +625,7 @@ public class DBHandler {
         obj.setList(listaProfil);
         obj.setRows(getRowCount(searchQuery));
     	
+        System.out.println(obj.toString());
         
         return obj;
     }
@@ -605,7 +642,7 @@ public class DBHandler {
         try {
             String query = "SELECT id_cont, id_muncitor, id_categorie, id_oras, name, prenume, titlu "
             		+ "FROM muncitor WHERE titlu LIKE '%"+searchQuery+"%' "
-            				+ " AND id_categorie="+categoryId+" LIMIT "+(limit-1)+",10";
+            				+ " AND id_categorie="+categoryId+" LIMIT "+limit*10+",10";
             res = st.executeQuery(query);
 
             System.out.println(query);
@@ -653,7 +690,7 @@ public class DBHandler {
         try {
             String query = "SELECT id_cont, id_muncitor, id_categorie, id_oras, name, prenume, titlu "
             		+ "FROM muncitor WHERE titlu LIKE '%"+searchQuery+"%' "
-            				+ " AND id_oras="+cityId+" LIMIT "+(limit-1)+",10";
+            				+ " AND id_oras="+cityId+" LIMIT "+limit*10+",10";
             res = st.executeQuery(query);
 
             System.out.println(query);
@@ -700,7 +737,7 @@ public class DBHandler {
 
         try {
             String query = "SELECT id_cont, id_muncitor, id_categorie, id_oras, name, prenume, titlu "
-            		+ "FROM muncitor WHERE id_oras="+cityId+" LIMIT "+(limit-1)+",10";
+            		+ "FROM muncitor WHERE id_oras="+cityId+" LIMIT "+limit*10+",10";
             res = st.executeQuery(query);
 
             System.out.println(query);
@@ -747,7 +784,7 @@ public class DBHandler {
 
         try {
             String query = "SELECT id_cont, id_muncitor, id_categorie, id_oras, name, prenume, titlu "
-            		+ "FROM muncitor WHERE id_categorie="+categoryId+" LIMIT "+(limit-1)+",10";
+            		+ "FROM muncitor WHERE id_categorie="+categoryId+" LIMIT "+limit*10+",10";
 
         
             res = st.executeQuery(query);
@@ -797,7 +834,7 @@ public class DBHandler {
 
         try {
             String query = "SELECT id_cont, id_muncitor, id_categorie, id_oras, name, prenume, titlu "
-            		+ "FROM muncitor  LIMIT "+(limit-1)+",10";
+            		+ "FROM muncitor  LIMIT "+limit*10+",10";
            
             res = st.executeQuery(query);
 
@@ -1559,7 +1596,7 @@ public class DBHandler {
   	   RestAccountInfo account = new RestAccountInfo();
      	
          try {
-             String query = "SELECT * FROM cont WHERE id_cont="+id_account;
+             String query = "SELECT email FROM cont WHERE id_cont="+id_account;
              res = st.executeQuery(query);
              if (res.next()) {
                  account.setEmail(res.getString("email"));
@@ -1574,7 +1611,9 @@ public class DBHandler {
 
   	       }
          
-         account.setFull_name(getFullName(account.getId()));
+         String full = getFullName(id_account);
+         
+         account.setFull_name(full == null ? "":full);
          
          
          System.out.println("Account info: "+account.toString());
@@ -1690,10 +1729,10 @@ public class DBHandler {
     	createStatement();
     	
     	try {
-            String query = "SELECT * FROM muncitor WHERE id_muncitor="+profile_id;
+            String query = "SELECT name, prenume FROM muncitor WHERE id_muncitor="+profile_id;
             res = st.executeQuery(query);
             if (res.next()) {
-                full_name = res.getString("nume")+" "+res.getString("prenume");
+                full_name = res.getString("name")+" "+res.getString("prenume");
             }
 
         } catch (Exception e) {

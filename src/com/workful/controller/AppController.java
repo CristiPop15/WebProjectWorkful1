@@ -1,8 +1,11 @@
 package com.workful.controller;
 
 
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -11,6 +14,7 @@ import com.workful.handler.DBHandler;
 import com.workful.templates.Account;
 import com.workful.templates.ObjectList;
 import com.workful.templates.RestAccountInfo;
+import com.workful.templates.SearchObj;
 
 @RestController
 @RequestMapping("/app")
@@ -52,9 +56,7 @@ public class AppController {
 		
 		System.out.println("restful web service ----- category list request");
 		
-
 		objList.setList(db.getCategory());
-		
 		
 		return objList;
 	}
@@ -67,7 +69,6 @@ public class AppController {
 		System.out.println("email: "+email+" -- password "+password);
 
 
-		
 		final int FAIL = 0;
 		final int SUCCESS = 1;
 		final int EMAIL_IN_USE = 2;
@@ -100,12 +101,11 @@ public class AppController {
 		System.out.println("email: "+email+" -- password "+password);
 		
 		
-		// encript password
+		// verify password
 		if (BCrypt.checkpw(password, db.getPassword(email)))
 		    return db.getAccountInfo(db.getAccountId(email));
 		else
-		    return new RestAccountInfo();
-		
+		    return null;
 		
 	}
 	
@@ -117,11 +117,41 @@ public class AppController {
 	public boolean registerNewProfile(){
 		
 	}
-	
-	@RequestMapping("/search")
-	public ObjectList search(){}
 		
 		*/
+	
+	@RequestMapping("/search")
+	public SearchObj search(@RequestParam(value = "city", required=false, defaultValue="0")String city,
+			@RequestParam(value = "category", required=false, defaultValue="0")String category, 
+			@RequestParam(value = "query", required=false, defaultValue="query")String searchQuery,
+			@RequestParam(value = "limit", required=false, defaultValue="0")String lim){
+	
+		System.out.println(String.format("city = %s, category = %s, query = %s ", city,category,searchQuery));
+		
+		int limit = Integer.parseInt(lim);
+		int cityId = Integer.parseInt(city);
+		int categoryId = Integer.parseInt(category);
+
+		SearchObj result = new SearchObj();		
+		
+		//if all fields are provided
+		if(cityId != 0 && categoryId !=0 && !(searchQuery.equals("query")))	{
+			System.out.println("All fields");
+			return db.getSearchResult(cityId, categoryId, searchQuery, limit);
+
+		}
+		//if only the query is provided
+		else if(cityId == 0 && categoryId ==0 && !(searchQuery.equals("query"))){
+			System.out.println("Only query");
+			return db.getSearchResult(searchQuery, limit);
+		}else if(cityId != 0 && categoryId !=0 && (searchQuery.equals("query"))){
+			System.out.println("City & category");
+			return db.getSearchResult(cityId,  categoryId, limit);
+		}
+			
+		return result;
+		
+	}
 	
 	}
 	

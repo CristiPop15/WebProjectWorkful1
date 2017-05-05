@@ -58,7 +58,7 @@ public class SearchController {
 	public ModelMap search(ModelMap model, @RequestParam(value = "city", required=false, defaultValue="0")String city,
 			@RequestParam(value = "category", required=false, defaultValue="0")String category, 
 			@RequestParam(value = "query", required=false, defaultValue="query")String searchQuery,
-			@RequestParam(value = "limit", required=false, defaultValue="1")String lim){
+			@RequestParam(value = "limit", required=false, defaultValue="0")String lim){
 		
 		
 		current = getPerson();

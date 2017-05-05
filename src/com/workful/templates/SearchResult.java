@@ -1,7 +1,7 @@
 package com.workful.templates;
 
 public class SearchResult {
-	private String name, surname, title, imgPath, city, category;
+	private String name, surname, title, imgPath, city, category, email;
 	private int id;
 
 	public String getName() {
@@ -59,6 +59,14 @@ public class SearchResult {
 
 	public void setCategory(String category) {
 		this.category = category;
+	}
+
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
 	}
 	
 	
