@@ -1,16 +1,16 @@
 package com.workful.controller;
 
 
-import org.springframework.security.authentication.AnonymousAuthenticationToken;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.workful.handler.DBHandler;
+import com.workful.templates.Acc;
 import com.workful.templates.Account;
 import com.workful.templates.ObjectList;
 import com.workful.templates.RestAccountInfo;
@@ -61,19 +61,18 @@ public class AppController {
 		return objList;
 	}
 
-	@RequestMapping("/register-new-account")
-	public int registerNewAccount(@RequestParam("email")String email,
-			@RequestParam("password")String password){
+	@RequestMapping(value = "/register-new-account", method = RequestMethod.POST)
+	public int registerNewAccount(@RequestBody Acc account){
 		
 		System.out.println("restful web service ----- Register new Account ");
-		System.out.println("email: "+email+" -- password "+password);
+		System.out.println("email: "+account.getEmail()+" -- password "+account.getPassword());
 
 
 		final int FAIL = 0;
 		final int SUCCESS = 1;
 		final int EMAIL_IN_USE = 2;
 		
-		if(db.searchForEmail(email))
+		if(db.searchForEmail(account.getEmail()))
 			return EMAIL_IN_USE;
 		
 		//store in db
@@ -81,9 +80,9 @@ public class AppController {
 		 
 		// encript password
 		BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-		String hashedPassword = passwordEncoder.encode(password);
+		String hashedPassword = passwordEncoder.encode(account.getPassword());
 		
-		 newAccount.setEmail(email);
+		 newAccount.setEmail(account.getEmail());
 		 newAccount.setPassword(hashedPassword);
 		 newAccount.setRegistrationDate();
 		 

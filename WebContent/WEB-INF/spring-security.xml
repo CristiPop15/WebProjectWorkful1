@@ -21,7 +21,7 @@
   		<access-denied-handler error-page="/403" />
   
   		<!-- enable csrf protection -->
-		<csrf/>
+		<csrf disabled="true"/>
 	</http>
 	
 	
