@@ -157,13 +157,26 @@
 </div>
 	
 	
-<ul class="pagination">
-  	<c:forEach items="${pagination}" var="a">
-		
-		<li><a href="#">${a}</a></li>
-		
-	</c:forEach>
-</ul>
+<div class="text-center" style="text-align:center;">
+	<div class="form-1">
+		<form class="text-left" action="search">	
+			<input type="hidden" name="city" value="${cityP}"/><p>${cityP }</p>
+			<input type="hidden" name="category" value="${categoryP}"/><p>${categoryP }</p>
+			<input type="hidden" name="query" value="${queryP}"/><p>${queryP }</p>
+			<input type="hidden" name="limit" value="${limitP }"/><p>${limit}</p>	
+			<div class="main-form">			
+			 <c:if test="${limit >1}">	
+				<button type="submit" class="filter" ><i class="fa fa-filter"></i></button>
+			</c:if>
+			<c:if test="${empty end}">
+				<button type="submit" class="button"><i class="fa fa-search"></i></button>
+			</c:if>
+			<p>${limit}</p>
+			</div>
+		</form>
+	</div>
+	<!-- end:Main Form -->
+</div>
 	
 </body>
 </html>

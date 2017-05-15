@@ -82,6 +82,9 @@ public class SearchController {
 		if(cityId != 0 && categoryId !=0 && !(searchQuery.equals("query")))	{
 			System.out.println("All fields");
 			result = db.getSearchResult(cityId, categoryId, searchQuery, limit);
+			model.addAttribute("cityP",cityId);
+			model.addAttribute("categoryP",categoryId);
+			model.addAttribute("queryP",searchQuery);
 			System.out.println("All fields--end");
 
 		}
@@ -89,6 +92,7 @@ public class SearchController {
 		else if(cityId == 0 && categoryId ==0 && !(searchQuery.equals("query"))){
 			System.out.println("Only query");
 			result = db.getSearchResult(searchQuery, limit);
+			model.addAttribute("queryP",searchQuery);
 			System.out.println("Only query--end");
 
 		}
@@ -96,6 +100,7 @@ public class SearchController {
 		else if(cityId != 0 && categoryId ==0 && searchQuery.equals("query")){
 			System.out.println("Only city");
 			result = db.getSearchCityResult(cityId, limit);
+			model.addAttribute("cityP", cityId);
 			System.out.println("Only city---end");
 
 		}	
@@ -104,6 +109,7 @@ public class SearchController {
 		else if(cityId == 0 && categoryId !=0 && searchQuery.equals("query")){
 			System.out.println("Only category");
 			result = db.getSearchResult(categoryId, limit);
+			model.addAttribute("categoryP", categoryId);
 			System.out.println("Only category--end");
 
 		}
@@ -111,6 +117,8 @@ public class SearchController {
 		else if(cityId != 0 && categoryId !=0 && searchQuery.equals("query")){
 			System.out.println("city & category");
 			result = db.getSearchResult(cityId, categoryId, limit);
+			model.addAttribute("cityP", cityId);
+			model.addAttribute("categoryP", categoryId);
 			System.out.println("city & category--end");
 
 		}
@@ -118,6 +126,8 @@ public class SearchController {
 		else if(cityId != 0 && categoryId ==0 && !(searchQuery.equals("query"))){
 			System.out.println("city & query");
 			result = db.getSearchCityResult(cityId, searchQuery, limit);
+			model.addAttribute("cityP", cityId);
+			model.addAttribute("queryP", searchQuery);
 			System.out.println("city & query--end");
 
 		}
@@ -125,6 +135,8 @@ public class SearchController {
 		else if(cityId == 0 && categoryId !=0 && !(searchQuery.equals("query"))){
 			System.out.println("query & category");
 			result = db.getSearchResult(categoryId, searchQuery, limit);
+			model.addAttribute("queryP", searchQuery);
+			model.addAttribute("categoryP", categoryId);
 			System.out.println("query & category--end");
 
 		}
@@ -148,8 +160,11 @@ public class SearchController {
 		
 		else{
 			model.addAttribute("result", result.getList());
-			model.addAttribute("pagination", getPagination(limit, result.getRows()));
+			limit++;
+			model.addAttribute("limitP", limit);
 		}
+		
+		System.out.println(limit);
 		return model;
 		
 	}
