@@ -1,6 +1,9 @@
 package com.workful.controller;
 
 
+import java.io.IOException;
+import java.util.ArrayList;
+
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -10,9 +13,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.workful.handler.DBHandler;
+import com.workful.handler.ImageHandler;
 import com.workful.templates.Acc;
 import com.workful.templates.Account;
+import com.workful.templates.AppProfile;
+import com.workful.templates.Comm;
 import com.workful.templates.ObjectList;
+import com.workful.templates.Profile;
 import com.workful.templates.RestAccountInfo;
 import com.workful.templates.SearchObj;
 
@@ -108,17 +115,34 @@ public class AppController {
 		
 	}
 	
+	 
+	@RequestMapping(value = "/register-new-profile", method = RequestMethod.POST)
+	public boolean registerNewProfile(@RequestBody AppProfile appProfile){
+		 System.out.println("Register new profile");
+		 System.out.println(appProfile.toString());
+		 
+		 if(db.getWorkerProfile(appProfile.getProfile().getId()) == null){
+
+			try {
+				ImageHandler.saveImage(appProfile.getImage_bytes(), appProfile.getProfile().getEmail());
+				db.registerNewProfile(appProfile.getProfile(), appProfile.getProfile().getId());
 	
-	
-	/*
-	 * 
-	@RequestMapping("/register-new-profile")
-	public boolean registerNewProfile(){
+				ImageHandler.saveImage(appProfile.getImage_bytes(), appProfile.getProfile().getEmail());
+			
+				
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				System.out.println("Catch");
+			}
 		
-	}
-		
-		*/
-	
+			return true;
+		 }
+		 else 
+			 return false;
+		 }
+
+			
 	@RequestMapping("/search")
 	public SearchObj search(@RequestParam(value = "city", required=false, defaultValue="0")String city,
 			@RequestParam(value = "category", required=false, defaultValue="0")String category, 
@@ -152,7 +176,70 @@ public class AppController {
 		
 	}
 	
+	@RequestMapping("/get-profile")
+	public Profile getProfile(@RequestParam("id")String ids){
+		int id = Integer.parseInt(ids);
+		
+		return db.getProfile(id);
 	}
+	
+	@RequestMapping("/get-skills")
+	public ArrayList<Object> getSkills(@RequestParam("category")String category){
+		
+		System.out.println("skills from category - "+category);
+
+		
+		ArrayList<Object> skills = new ArrayList<Object>();
+		
+		skills.add(db.getSkillFromCat(Integer.parseInt(category)));
+		System.out.println(skills);
+		return skills;
+	}
+	
+	
+	@RequestMapping(value = "/get-comments")
+	public Comm getComments(@RequestParam("id")String id){
+		 System.out.println("Get Comments");
+		 System.out.println(db.getComment(Integer.valueOf(id)));
+
+		 Comm comments = new Comm();
+		 comments.comments.addAll(db.getComment(Integer.valueOf(id)));
+		return comments;
+	}
+	
+	@RequestMapping(value = "/add-comment")
+	public int addComment(@RequestParam("id")String id, @RequestParam("profile")String profile_id,
+			@RequestParam("nota")String nota, @RequestParam("text")String text){
+		 System.out.println("add Comments");
+		 System.out.println(id);
+		 System.out.println(profile_id);
+		 System.out.println(nota);
+		 System.out.println(text);
+
+		db.addComment(Integer.valueOf(id), Integer.valueOf(profile_id), Integer.valueOf(nota), text);
+		
+		 System.out.println("after");
+
+		return 1;
+	}
+
+	@RequestMapping(value = "/delete-profile")
+	public boolean deleteProfile(@RequestParam("id")String id){
+		 System.out.println("Delete Profile - "+id);
+		 
+		 return db.deleteWorkerProfile1(Integer.parseInt(id));
+		 
+	}
+	
+	@RequestMapping(value = "/delete-account")
+	public boolean deleteAccount(@RequestParam("email")String email){
+		 System.out.println("Delete Account - "+email);
+		 
+		 return db.deleteUser(email);
+		 
+	}
+	
+}
 	
 	
 	

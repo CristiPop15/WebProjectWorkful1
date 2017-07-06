@@ -258,8 +258,7 @@ public class DBHandler {
 	
 	    //use to get skill id based on skill title (provide skill title)
 	    //private because it's only used by methods within this class
-		@SuppressWarnings("unused")
-		private int getSkillId(String skill){
+		public int getSkillId(String skill){
 
 			Connection connection = null;
 	    	Statement statement = null;
@@ -1222,7 +1221,7 @@ public class DBHandler {
     		createStatement();
 
             try {
-                String query = "SELECT * from muncitor WHERE id_muncitor="+id;
+                String query = "SELECT * from muncitor JOIN cont ON(muncitor.id_cont = cont.id_cont) WHERE id_muncitor="+id;
                 res = st.executeQuery(query);
 
                 System.out.println(query);
@@ -1231,13 +1230,16 @@ public class DBHandler {
                 if(res.next()){
                 	
                 	p.setId(res.getInt("id_muncitor"));
-                	p.setCityId(getCityName(res.getInt("id_oras")));
-                	p.setCategoryId(getCategoryName(res.getInt("id_categorie")));
+                	p.setCity(getCityName(res.getInt("id_oras")));
+                	p.setCategory(getCategoryName(res.getInt("id_categorie")));
                 	p.setName((res.getString("name")));
                 	p.setSurname(res.getString("prenume"));
                 	p.setTitle(res.getString("titlu"));
                 	p.setDescription(res.getString("descriere"));
                 	p.setTelephone(res.getString("telefon"));
+                	p.setEmail(res.getString("email"));
+                    p.addSkills(getProfileSkills(res.getInt("id_muncitor")));
+
                 	if(getImagePath(res.getInt("id_cont"))== null)
                 		p.setImgPath("./resources/img/default.png");
                 	else
@@ -1252,38 +1254,56 @@ public class DBHandler {
     	    	   closeStatement();
     	       }
     		
+            System.out.println(p);
     		
     		return p;
     	}
 
     	public ArrayList<SkillLvl> getProfileSkills(int id) {
-    		createStatement();
+
+    		Connection connection = null;
+	    	Statement statement = null;
+	    	ResultSet result = null;
+	    	
+	    	try {
+	    		connection = dataSource.getConnection();
+				statement = connection.createStatement();
+
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}	
 	    	
 	        ArrayList<SkillLvl> skills = new ArrayList<SkillLvl>();
 	
 	        try {
 	            String query = "SELECT * FROM aptitudinimuncitor "
 	            		+ "WHERE id_muncitor="+id;
-	            res = st.executeQuery(query);
+	            result = statement.executeQuery(query);
 	
 	
-	            while(res.next()){
+	            while(result.next()){
 	                SkillLvl skill= new SkillLvl();
 	                
-	                skill.setName(getSkillName(res.getInt("id_aptitudine")));
-	                skill.setLevel(res.getInt("nivel"));
+	                skill.setName(getSkillName(result.getInt("id_aptitudine")));
+	                skill.setLevel(result.getInt("nivel"));
 	                
 	                skills.add(skill);
 	
 	                }
 	
+	           
 	        } catch (Exception e) {
 	            e.printStackTrace();
 	        }
 	        finally{
-		    	   closeStatement();
+	        	if (result != null) try { result.close(); } catch (SQLException e) {e.printStackTrace();}
+	            if (statement != null) try { statement.close(); } catch (SQLException e) {e.printStackTrace();}
+	            if (connection != null) try { connection.close(); } catch (SQLException e) {e.printStackTrace();}
+				
 
 		       }
+	        
+	        System.out.println("Skills: - "+skills);
 	
 	        return skills;
 		}
@@ -1559,6 +1579,29 @@ public class DBHandler {
 		return success;
     }
     
+ public boolean deleteWorkerProfile1(int workerId){
+    	
+    	createStatement();
+    	
+    	boolean success = true;
+    			
+		try {
+			String query = "DELETE FROM muncitor WHERE id_cont="+workerId;
+            st.executeUpdate(query);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            success=false;
+        }
+        finally{
+	    	   closeStatement();
+	       }
+		
+		System.out.println("worker profile deleted");
+		
+		return success;
+    }
+    
     
      @SuppressWarnings("null")
 	public Profile getWorkerProfile(int accountId){
@@ -1570,8 +1613,8 @@ public class DBHandler {
 			String query = "SELECT * FROM muncitor WHERE id_cont="+accountId;
             res = st.executeQuery(query);
             if (res.next()) {
-                profil.setCategoryId(String.valueOf(res.getInt("id_categorie")));
-                profil.setCityId(String.valueOf(res.getInt("id_oras")));
+                profil.setCategory(String.valueOf(res.getInt("id_categorie")));
+                profil.setCity(String.valueOf(res.getInt("id_oras")));
                 profil.setDescription(res.getString("descriere"));
                 profil.setName(res.getString("name"));
                 profil.setSurname(res.getString("prenume"));
@@ -1751,13 +1794,13 @@ public class DBHandler {
 
     	createStatement();
     	
-    	System.out.println("Register nw profile");
+    	System.out.println("Register new profile");
     	
         boolean register=true;
         int success=0;
         
             String query = "INSERT INTO muncitor (id_categorie, id_oras, id_cont, titlu, telefon, descriere, name, prenume ) "
-            		+ "VALUES("+Integer.parseInt(profile.getCategoryId())+","+Integer.parseInt(profile.getCityId())+","
+            		+ "VALUES("+Integer.parseInt(profile.getCategory())+","+Integer.parseInt(profile.getCity())+","
             				+id+",'"+profile.getTitle()+"','"+profile.getTelephone()+"','"+profile.getDescription()+"',"
             						+ "'"+profile.getName()+"','"+profile.getSurname()+"')";
             
@@ -1767,7 +1810,7 @@ public class DBHandler {
 
         	
             success = st.executeUpdate(query);
-            insertIntoProfileSkills(getWorkerId(id), getSkillFromCat(Integer.parseInt(profile.getCategoryId())));
+            insertIntoProfileSkills(getWorkerId(id), getSkillFromCat(Integer.parseInt(profile.getCategory())));
             
         	System.out.println("End ----- Register nw profile");
 
@@ -1937,17 +1980,24 @@ public class DBHandler {
         return comments;
     }
     
-    public void addComment(int id, int profile_id, int notaN, String text) {
+    public int addComment(int id, int profile_id, int notaN, String text) {
     	createStatement();
+    	
+    	System.out.println("Insert comment");
     	
     	String query = "INSERT INTO comentarii(id_cont, id_muncitor, rating, text_comentariu,"
     			+ " data_comentariu) VALUES("+id+","+profile_id+","+notaN+",'"+text+"','"+Date.currentDate()+"')";
     	
-    	try {
-    		st.executeUpdate(query);
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+		System.out.println(query);
+
+    	
+    		try {
+				st.executeUpdate(query);
+			} catch (SQLException e) {
+		    	System.out.println("Error");
+				e.printStackTrace();
+			}
+       return 1;
     
     }
     
@@ -2329,6 +2379,7 @@ public class DBHandler {
 		}
 
 		private void createStatement(){
+			System.out.println("Create statement");
 			try {
 				con = dataSource.getConnection();
 				st = con.createStatement();

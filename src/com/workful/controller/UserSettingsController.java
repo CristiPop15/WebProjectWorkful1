@@ -274,8 +274,8 @@ public class UserSettingsController {
 		model.addAttribute("category", db.getCategory());
 		
 		
-		profile.setCityId(city);
-		profile.setCategoryId(category);
+		profile.setCity(city);
+		profile.setCategory(category);
 		
 		if(db.registerNewProfile(profile, current.getId()))
 			return "redirect:/user/skill-level";
